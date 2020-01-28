@@ -1,0 +1,29 @@
+import os
+
+
+def read_rsa_key(filename):
+    try:
+        with open(filename, 'r') as f:
+            key = f.read()
+            return key
+    except:
+        Exception('Error while reading rsa key file - ', filename)
+
+# FLASK APP
+FLASK_APP = 'server/__init__.py'
+DEFAULT_IP = '0.0.0.0:3000'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///../test.db'
+
+
+# RSA KEYS for JWT
+_PRIVATE_KEY_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'keys', 'key')
+PRIVATE_KEY = read_rsa_key(_PRIVATE_KEY_PATH)
+
+_PUBLIC_KEY_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'keys', 'key.pub')
+PUBLIC_KEY = read_rsa_key(_PUBLIC_KEY_PATH)
+
+JWT_COOKIE_NAME = 'token'
+
+# SALT for password encryption
+SALT_PRE = 'A#c.+!Y17asU' # put this before password string
+SALT_POST = 'X$AY67!' # put this after password string
