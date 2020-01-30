@@ -9,8 +9,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-from server.models.models import *
+from server.models.entity import *
 
-from server.routes.test import *
-from server.routes.test2 import *
-from server.routes.users import *
+from server.routes import *

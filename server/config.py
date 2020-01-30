@@ -14,6 +14,7 @@ FLASK_APP = 'server/__init__.py'
 DEFAULT_IP = '0.0.0.0:3000'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///../test.db'
 
+URI_PREFIX = '/api/v1/users'
 
 # RSA KEYS for JWT
 _PRIVATE_KEY_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'keys', 'key')
