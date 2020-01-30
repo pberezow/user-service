@@ -38,6 +38,8 @@ class UserAPI(AbstractUserAPI):
     @staticmethod
     def refresh_token(request):
         users_jwt = get_JWT_from_cookie()
+        if not users_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
         if 'exp' in users_jwt:
             users_jwt.pop('exp')
 
@@ -51,11 +53,16 @@ class UserAPI(AbstractUserAPI):
 
     @staticmethod
     def register(request):
-        errors = create_user_validator.validate(request.json)
+        user_jwt = get_JWT_from_cookie()
+        if not user_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
+
+        form = request.json
+        form['licence_id'] = user_jwt['licence_id']
+        errors = create_user_validator.validate(form)
         if errors:
             return error_message(str(errors), HTTPStatus.BAD_REQUEST)
         
-        form = request.json
         pass_hash = hash_password(form['password'])
         form.pop('password')
         form['password_hash'] = pass_hash
