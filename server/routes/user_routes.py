@@ -1,4 +1,4 @@
-from flask import request, jsonify # drop jsonify later
+from flask import request, jsonify  # drop jsonify later
 
 from server import app
 from server.config import URI_PREFIX
@@ -16,15 +16,18 @@ def refresh_token():
     response = UserAPI.refresh_token(request)
     return response
 
+
 @app.route(URI_PREFIX+'/register', methods=['POST'])
 def register():
     response = UserAPI.register(request)
     return response
 
+
 @app.route(URI_PREFIX, methods=['GET'])
 def users_list():
     response = UserAPI.users_list(request)
     return response
+
 
 @app.route(URI_PREFIX+'/<int:user_id>', methods=['GET', 'PUT', 'DELETE'])
 def user_details(user_id):
@@ -43,10 +46,12 @@ def user_details(user_id):
 
     return response
 
+
 @app.route(URI_PREFIX+'/<int:user_id>/avatar', methods=['PUT'])
 def set_user_avatar(user_id):
     response = UserAPI.set_user_avatar(request, user_id)
     return response
+
 
 @app.route(URI_PREFIX+'/<int:user_id>/permissions', methods=['PUT'])
 def set_user_groups(user_id):

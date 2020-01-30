@@ -6,6 +6,7 @@ users_groups = db.Table('users_groups',
     db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True)
 )
 
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -21,9 +22,10 @@ class User(db.Model):
     last_name = db.Column(db.String(30), nullable=True)
     position = db.Column(db.String(30), nullable=True)
     groups = db.relationship('Group', secondary=users_groups, lazy='select',
-        backref=db.backref('users', lazy='subquery'))
+                             backref=db.backref('users', lazy='subquery'))
 
-    def __init__(self, licence_id, username, password_hash, email, is_admin, phone_number=None, address=None, first_name=None, last_name=None, position=None, groups=None):
+    def __init__(self, licence_id, username, password_hash, email, is_admin, phone_number=None, address=None,
+                 first_name=None, last_name=None, position=None, groups=None):
         self.licence_id = licence_id
         self.username = username
         self.password_hash = password_hash

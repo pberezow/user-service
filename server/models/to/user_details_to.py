@@ -4,16 +4,16 @@ from server.utils import encode_JWT
 
 class UserDetailsTO:
     def __init__(self, user_model):
-        self.licence_id     = user_model.licence_id
-        self.username       = user_model.username 
-        self.email          = user_model.email
-        self.is_admin       = user_model.is_admin
-        self.phone_number   = user_model.phone_number
-        self.address        = user_model.address
-        self.first_name     = user_model.first_name
-        self.last_name      = user_model.last_name
-        self.position       = user_model.position
-        self.groups         = None # TODO
+        self.licence_id = user_model.licence_id
+        self.username = user_model.username
+        self.email = user_model.email
+        self.is_admin = user_model.is_admin
+        self.phone_number = user_model.phone_number
+        self.address = user_model.address
+        self.first_name = user_model.first_name
+        self.last_name = user_model.last_name
+        self.position = user_model.position
+        self.groups = None  # TODO
 
     @classmethod
     def from_list(cls, users_list):

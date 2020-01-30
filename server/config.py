@@ -9,6 +9,7 @@ def read_rsa_key(filename):
     except:
         Exception('Error while reading rsa key file - ', filename)
 
+
 # FLASK APP
 FLASK_APP = 'server/__init__.py'
 DEFAULT_IP = '0.0.0.0:3000'
@@ -26,5 +27,5 @@ PUBLIC_KEY = read_rsa_key(_PUBLIC_KEY_PATH)
 JWT_COOKIE_NAME = 'token'
 
 # SALT for password encryption
-SALT_PRE = 'A#c.+!Y17asU' # put this before password string
-SALT_POST = 'X$AY67!' # put this after password string
+SALT_PRE = 'A#c.+!Y17asU'  # put this before password string
+SALT_POST = 'X$AY67!'  # put this after password string

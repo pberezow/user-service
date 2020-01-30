@@ -12,6 +12,7 @@ from server.models.to import UserDetailsTO
 
 class UserAPI(AbstractUserAPI):
     def __init__(self):
+        super().__init__()
         self.version = 'v1'
 
     @staticmethod

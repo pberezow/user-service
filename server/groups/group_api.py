@@ -6,6 +6,7 @@ from server.utils import error_message
 
 class GroupAPI(AbstractGroupAPI):
     def __init__(self):
+        super().__init__()
         self.version = 'v1'
 
     @staticmethod

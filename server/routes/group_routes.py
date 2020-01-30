@@ -10,10 +10,12 @@ def add_permission_group():
     response = GroupAPI.add_group(request)
     return response
 
+
 @app.route(URI_PREFIX+'/permissions', methods=['GET'])
 def get_permission_groups():
     response = GroupAPI.get_all_groups(request)
     return response
+
 
 @app.route(URI_PREFIX+'/permissions/<group_name>', methods=['PUT', 'DELETE'])
 def set_delete_permission_group(group_name):
@@ -25,4 +27,3 @@ def set_delete_permission_group(group_name):
         response = GroupAPI.delete_group(request, group_name)
     
     return response
-    
