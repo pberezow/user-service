@@ -1,9 +1,11 @@
-from server.models.entity.user_model import User
+from .abstract_to import AbstractTO
 from server.utils import encode_JWT
 
 
-class UserDetailsTO:
+class UserDetailsTO(AbstractTO):
     def __init__(self, user_model):
+        super().__init__(user_model)
+        self.id = user_model.id
         self.licence_id = user_model.licence_id
         self.username = user_model.username
         self.email = user_model.email
@@ -15,15 +17,9 @@ class UserDetailsTO:
         self.position = user_model.position
         self.groups = None  # TODO
 
-    @classmethod
-    def from_list(cls, users_list):
-        users = []
-        for user in users_list:
-            users.append(cls(user))
-        return users
-
     def get_jwt(self):
         jwt_payload = {
+            'id': self.id,
             'licence_id': self.licence_id,
             'username': self.username,
             'is_admin': self.is_admin,
@@ -45,5 +41,5 @@ class UserDetailsTO:
             'first_name': self.first_name,
             'last_name': self.last_name,
             'position': self.position,
-            'groups': None # TODO
+            'groups': None  # TODO
         }

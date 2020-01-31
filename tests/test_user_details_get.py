@@ -24,7 +24,7 @@ def test_user_details_unauthorized(setup_db):
 
 def test_user_details_different_licence(setup_db, create_another_user, login_session):
     r = login_session.get(url + '/2')
-    assert r.status_code == HTTPStatus.BAD_REQUEST
+    assert r.status_code == HTTPStatus.NOT_FOUND
     assert r.json().get('user', None) is None
 
 
@@ -48,7 +48,7 @@ def test_user_details_not_admin_another_details(setup_db, login_session):
         raise Exception('Error during test_user login!')
 
     r = ses.get(url + '/1')
-    assert r.status_code == HTTPStatus.BAD_REQUEST
+    assert r.status_code == HTTPStatus.FORBIDDEN
     assert r.json().get('user', None) is None
 
 

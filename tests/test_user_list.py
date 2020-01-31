@@ -21,3 +21,29 @@ def test_user_list_unauthorized(setup_db, create_another_user):
     r = requests.get(url)
     assert r.json().get('users', None) is None
     assert r.status_code == HTTPStatus.UNAUTHORIZED
+
+
+def test_user_list_non_admin_success(setup_db, create_another_user, login_session):
+    payload = {
+        'username': 'test_user',
+        'email': 'asd@asd.asda',
+        'password': 'test_user1',
+        'is_admin': False
+    }
+    r = login_session.post(url + '/register', json=payload)
+    if r.status_code != HTTPStatus.CREATED:
+        raise Exception('Error while creating test user!')
+
+    ses = requests.Session()
+    payload.pop('email')
+    payload.pop('is_admin')
+    r = ses.post(url + '/login', json=payload)
+    if r.cookies.get(JWT_COOKIE_NAME, None) is None:
+        raise Exception('Error during test_user login!')
+
+    r = ses.get(url)
+    assert len(r.json()['users']) == 2
+    forbidden_user_fields = ['licence_id', 'username', 'password_hash', 'address', 'id', 'is_admin']
+    for user in r.json()['users']:
+        for key in user.keys():
+            assert key not in forbidden_user_fields

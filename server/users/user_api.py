@@ -7,7 +7,7 @@ from server.config import JWT_COOKIE_NAME
 from server.users.abstract_user_api import AbstractUserAPI
 from server.models.validators import login_validator, create_user_validator
 from server.models.entity import User
-from server.models.to import UserDetailsTO
+from server.models.to import UserDetailsTO, UserInfoTO
 
 
 class UserAPI(AbstractUserAPI):
@@ -78,18 +78,33 @@ class UserAPI(AbstractUserAPI):
 
     @staticmethod
     def users_list(request):
-        users = User.query.all()
-        users_to = UserDetailsTO.from_list(users)
+        users_jwt = get_JWT_from_cookie()
+        if not users_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
+
+        transport_object = UserInfoTO
+        if users_jwt.get('is_admin', False):
+            transport_object = UserDetailsTO
+
+        users = User.query.filter_by(licence_id=users_jwt['licence_id']).all()
+        users_to = transport_object.from_list(users)
         users_to = [user.to_dict() for user in users_to]
-        
+
         resp = make_response(jsonify({'users': users_to}))
         resp.status_code = HTTPStatus.OK
-        
+
         return resp
 
     @staticmethod
     def user_details_GET(request, user_id):
-        user = User.query.filter_by(id=user_id).first()
+        users_jwt = get_JWT_from_cookie()
+        if not users_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
+
+        if not users_jwt['is_admin'] and users_jwt['id'] != user_id:
+            return error_message('Forbidden', status=HTTPStatus.FORBIDDEN)
+
+        user = User.query.filter_by(id=user_id, licence_id=users_jwt['licence_id']).first()
         if not user:
             return error_message('User not found!', status=HTTPStatus.NOT_FOUND)
         user_to = UserDetailsTO(user)
