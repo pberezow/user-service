@@ -3,6 +3,8 @@ from server.utils import encode_JWT
 
 
 class UserDetailsTO(AbstractTO):
+    __name__ = 'UserDetailsTO'
+
     def __init__(self, user_model):
         super().__init__(user_model)
         self.id = user_model.id
@@ -15,7 +17,7 @@ class UserDetailsTO(AbstractTO):
         self.first_name = user_model.first_name
         self.last_name = user_model.last_name
         self.position = user_model.position
-        self.groups = None  # TODO
+        self.groups = user_model.groups  # TODO
 
     def get_jwt(self):
         jwt_payload = {
@@ -41,5 +43,5 @@ class UserDetailsTO(AbstractTO):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'position': self.position,
-            'groups': None  # TODO
+            'groups': []  # TODO
         }

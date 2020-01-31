@@ -2,6 +2,8 @@ from .abstract_to import AbstractTO
 
 
 class UserInfoTO(AbstractTO):
+    __name__ = 'UserInfoTO'
+
     def __init__(self, user_model):
         super().__init__(user_model)
         self.email = user_model.email

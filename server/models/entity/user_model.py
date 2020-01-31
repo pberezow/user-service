@@ -25,7 +25,7 @@ class User(db.Model):
                              backref=db.backref('users', lazy='subquery'))
 
     def __init__(self, licence_id, username, password_hash, email, is_admin, phone_number=None, address=None,
-                 first_name=None, last_name=None, position=None, groups=None):
+                 first_name=None, last_name=None, position=None, groups=[]):
         self.licence_id = licence_id
         self.username = username
         self.password_hash = password_hash
@@ -36,6 +36,7 @@ class User(db.Model):
         self.first_name = first_name
         self.last_name = last_name
         self.position = position
+        self.groups = []
 
     def __repr__(self):
         return '[{}] <{}. {}>'.format(self.licence_id, self.id, self.username)

@@ -20,7 +20,8 @@ def setup_db():
         "password_hash": hash_password("admin123"),
         "licence_id": 1,
         "email": "admin@admin.pl",
-        "is_admin": True
+        "is_admin": True,
+        "position": "Admin"
     }
     new_user = User(**new_user_payload)
     db.session.add(new_user)
@@ -55,3 +56,23 @@ def create_another_user():
     db.session.add(new_user)
     db.session.commit()
     yield
+
+
+@pytest.fixture
+def create_non_admin_user_and_login():
+    new_user_payload = {
+        "username": "test",
+        "password_hash": hash_password("test123"),
+        "licence_id": 1,
+        "email": "admin1@admin1.pl",
+        "is_admin": False,
+        "position": "NonAdmin"
+    }
+    new_user = User(**new_user_payload)
+    db.session.add(new_user)
+    db.session.commit()
+    session = requests.Session()
+    r = session.post(USERS_IP + '/login', json={'username': 'test', 'password': 'test123'})
+    if r.status_code != HTTPStatus.OK:
+        raise Exception('Error in login_session fixture!')
+    yield session

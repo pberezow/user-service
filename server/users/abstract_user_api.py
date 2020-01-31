@@ -35,6 +35,10 @@ class AbstractUserAPI:
         raise NotImplementedError()
 
     @staticmethod
+    def set_user_password(request, user_id):
+        raise NotImplementedError()
+
+    @staticmethod
     def set_user_avatar(request, user_id):
         raise NotImplementedError()
 

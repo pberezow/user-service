@@ -5,7 +5,7 @@ from server import db
 from server.utils import encode_JWT, decode_JWT, get_JWT_from_cookie, error_message, hash_password
 from server.config import JWT_COOKIE_NAME
 from server.users.abstract_user_api import AbstractUserAPI
-from server.models.validators import login_validator, create_user_validator
+from server.models.validators import login_validator, create_user_validator, set_user_data_validator
 from server.models.entity import User
 from server.models.to import UserDetailsTO, UserInfoTO
 
@@ -123,10 +123,60 @@ class UserAPI(AbstractUserAPI):
 
     @staticmethod
     def user_details_PUT(request, user_id):
-        return error_message('Not implemented yet!', status=HTTPStatus.NOT_FOUND)
+        users_jwt = get_JWT_from_cookie()
+        if not users_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
+
+        if not users_jwt['is_admin']:
+            return error_message('Forbidden', status=HTTPStatus.FORBIDDEN)
+
+        user = User.query.filter_by(id=user_id, licence_id=users_jwt['licence_id']).first()
+        if not user:
+            return error_message('User not found!', status=HTTPStatus.NOT_FOUND)
+
+        form = request.json
+        errors = set_user_data_validator.validate(form)
+        if errors:
+            return error_message(str(errors), HTTPStatus.BAD_REQUEST)
+
+        user_to = UserDetailsTO(user)
+
+        errors = user_to.set_data(form)
+        if errors:
+            return error_message(str(errors), HTTPStatus.BAD_REQUEST)
+
+        errors = user_to.update_model(user)
+        if errors:
+            return error_message(str(errors), HTTPStatus.BAD_REQUEST)
+
+        db.session.commit()
+
+        resp = make_response(jsonify(user_to.to_dict()))
+        resp.status_code = HTTPStatus.OK
+
+        return resp
 
     @staticmethod
     def user_details_DELETE(request, user_id):
+        users_jwt = get_JWT_from_cookie()
+        if not users_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
+
+        if not users_jwt['is_admin'] or users_jwt['id'] == user_id:
+            return error_message('Forbidden', status=HTTPStatus.FORBIDDEN)
+
+        user = User.query.filter_by(id=user_id, licence_id=users_jwt['licence_id']).first()
+        if not user:
+            return error_message('User not found!', status=HTTPStatus.NOT_FOUND)
+
+        db.session.delete(user)
+        db.session.commit()
+        resp = make_response()
+        resp.status_code = HTTPStatus.NO_CONTENT
+        return resp
+
+    @staticmethod
+    def set_user_password(request, user_id):
         return error_message('Not implemented yet!', status=HTTPStatus.NOT_FOUND)
 
     @staticmethod
