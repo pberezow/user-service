@@ -123,11 +123,11 @@ class UserAPI(AbstractUserAPI):
 
     @staticmethod
     def user_details_PUT(request, user_id):
-        raise NotImplementedError()
+        return error_message('Not implemented yet!', status=HTTPStatus.NOT_FOUND)
 
     @staticmethod
     def user_details_DELETE(request, user_id):
-        raise NotImplementedError()
+        return error_message('Not implemented yet!', status=HTTPStatus.NOT_FOUND)
 
     @staticmethod
     def set_user_avatar(request, user_id):
@@ -135,4 +135,4 @@ class UserAPI(AbstractUserAPI):
 
     @staticmethod
     def set_user_groups(request, user_id):
-        raise NotImplementedError()
+        return error_message('Not implemented yet!', status=HTTPStatus.NOT_FOUND)

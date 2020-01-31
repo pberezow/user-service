@@ -40,16 +40,10 @@ def user_details(user_id):
     response = None
     if request.method == 'GET':
         response = UserAPI.user_details_GET(request, user_id)
+    elif request.method == 'PUT':
+        response = UserAPI.user_details_PUT(request, user_id)
     else:
-        response = jsonify({
-            'endpoint': URI_PREFIX+'/<int:user_id>',
-            'method': request.method,
-            'parameter': user_id
-        })    
-    # elif request.method == 'PUT': # PUT
-        
-    # else: # DELETE
-
+        response = UserAPI.user_details_DELETE(request, user_id)
     return response
 
 
