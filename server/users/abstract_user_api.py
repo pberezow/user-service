@@ -7,6 +7,10 @@ class AbstractUserAPI:
         raise NotImplementedError()
 
     @staticmethod
+    def logout(request):
+        raise NotImplementedError()
+
+    @staticmethod
     def refresh_token(request):
         raise NotImplementedError()
 

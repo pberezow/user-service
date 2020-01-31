@@ -9,7 +9,13 @@ from server.users import UserAPI
 def login():
     response = UserAPI.login(request)
     return response
-    
+
+
+@app.route(URI_PREFIX+'/logout', methods=['GET'])
+def logout():
+    response = UserAPI.logout(request)
+    return response
+
 
 @app.route(URI_PREFIX+'/token/refresh', methods=['GET'])
 def refresh_token():

@@ -36,6 +36,13 @@ class UserAPI(AbstractUserAPI):
         return resp
 
     @staticmethod
+    def logout(request):
+        resp = make_response()
+        resp.status_code = HTTPStatus.OK
+        resp.delete_cookie(JWT_COOKIE_NAME)
+        return resp
+
+    @staticmethod
     def refresh_token(request):
         users_jwt = get_JWT_from_cookie()
         if not users_jwt:
