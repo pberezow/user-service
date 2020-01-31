@@ -47,9 +47,9 @@ def user_details(user_id):
     return response
 
 
-@app.route(URI_PREFIX+'/<int:user_id>/password', methods=['PUT'])
-def set_user_password(user_id):
-    response = UserAPI.set_user_password(request, user_id)
+@app.route(URI_PREFIX+'/password', methods=['PUT'])
+def set_user_password():
+    response = UserAPI.set_user_password(request)
     return response
 
 

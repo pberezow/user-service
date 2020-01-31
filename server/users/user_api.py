@@ -5,7 +5,7 @@ from server import db
 from server.utils import encode_JWT, decode_JWT, get_JWT_from_cookie, error_message, hash_password
 from server.config import JWT_COOKIE_NAME
 from server.users.abstract_user_api import AbstractUserAPI
-from server.models.validators import login_validator, create_user_validator, set_user_data_validator
+from server.models.validators import login_validator, create_user_validator, set_user_data_validator, set_user_password_validator
 from server.models.entity import User
 from server.models.to import UserDetailsTO, UserInfoTO
 
@@ -176,8 +176,32 @@ class UserAPI(AbstractUserAPI):
         return resp
 
     @staticmethod
-    def set_user_password(request, user_id):
-        return error_message('Not implemented yet!', status=HTTPStatus.NOT_FOUND)
+    def set_user_password(request):
+        users_jwt = get_JWT_from_cookie()
+        if not users_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
+
+        form = request.json
+        errors = set_user_password_validator.validate(form)
+        if errors:
+            return error_message(str(errors), HTTPStatus.BAD_REQUEST)
+
+        user = User.query.filter_by(id=users_jwt['id']).first()
+        if not user:
+            return error_message('User not found!', status=HTTPStatus.NOT_FOUND)
+
+        old_hash = hash_password(form['old_password'])
+        if old_hash != user.password_hash:
+            return error_message('Wrong password!', status=HTTPStatus.BAD_REQUEST)
+
+        new_hash = hash_password(form['new_password'])
+        user.password_hash = new_hash
+        db.session.commit()
+
+        resp = make_response()
+        resp.status_code = HTTPStatus.OK
+
+        return resp
 
     @staticmethod
     def set_user_avatar(request, user_id):

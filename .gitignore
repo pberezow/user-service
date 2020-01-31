@@ -2,3 +2,5 @@ __pycache__/
 *.db
 .idea/
 .pytest_cache/
+.scannerwork/
+sonar-project.properties
