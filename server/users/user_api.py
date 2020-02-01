@@ -17,12 +17,13 @@ class UserAPI(AbstractUserAPI):
 
     @staticmethod
     def login(request):
-        errors = login_validator.validate(request.json)
+        form = request.json or {}
+        errors = login_validator.validate(form)
         if errors:
             return error_message(str(errors), HTTPStatus.BAD_REQUEST)
 
-        pass_hash = hash_password(request.json['password'])
-        user = User.query.filter_by(username=request.json['username'], password_hash=pass_hash).first()
+        pass_hash = hash_password(form['password'])
+        user = User.query.filter_by(username=form['username'], password_hash=pass_hash).first()
         if user is None:
             return error_message('Wrong username or password!', HTTPStatus.BAD_REQUEST)
         user = UserDetailsTO(user)
@@ -64,7 +65,7 @@ class UserAPI(AbstractUserAPI):
         if not user_jwt:
             return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
 
-        form = request.json
+        form = request.json or {}
         form['licence_id'] = user_jwt['licence_id']
         errors = create_user_validator.validate(form)
         if errors:
@@ -134,7 +135,7 @@ class UserAPI(AbstractUserAPI):
         if not user:
             return error_message('User not found!', status=HTTPStatus.NOT_FOUND)
 
-        form = request.json
+        form = request.json or {}
         errors = set_user_data_validator.validate(form)
         if errors:
             return error_message(str(errors), HTTPStatus.BAD_REQUEST)
@@ -181,7 +182,7 @@ class UserAPI(AbstractUserAPI):
         if not users_jwt:
             return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
 
-        form = request.json
+        form = request.json or {}
         errors = set_user_password_validator.validate(form)
         if errors:
             return error_message(str(errors), HTTPStatus.BAD_REQUEST)

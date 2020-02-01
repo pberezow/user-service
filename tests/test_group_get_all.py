@@ -47,3 +47,9 @@ def test_group_get_all_when_more_than_one_licence(setup_db, login_session, creat
     r = login_session.get(url)
     assert r.status_code == HTTPStatus.OK
     assert len(r.json().get('groups', [])) == 1
+
+
+def test_group_get_all_non_admin(setup_db, login_session, create_non_admin_user_and_login):
+    r = create_non_admin_user_and_login.get(url)
+    assert r.status_code == HTTPStatus.FORBIDDEN
+    assert r.json().get('groups', None) is None

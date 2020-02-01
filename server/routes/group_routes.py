@@ -21,7 +21,7 @@ def get_permission_groups():
 def set_delete_permission_group(group_name):
     response = None
     
-    if request.method == 'GET':
+    if request.method == 'PUT':
         response = GroupAPI.set_group(request, group_name)
     else:
         response = GroupAPI.delete_group(request, group_name)

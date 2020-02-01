@@ -5,7 +5,7 @@ from server import db
 from server.groups.abstract_group_api import AbstractGroupAPI
 from server.utils import error_message, get_JWT_from_cookie
 from server.models.entity import Group
-from server.models.validators import create_group_validator
+from server.models.validators import create_group_validator, set_group_data_validator
 from server.models.to import GroupTO
 
 
@@ -23,9 +23,12 @@ class GroupAPI(AbstractGroupAPI):
         if not users_jwt['is_admin']:
             return error_message('Forbidden', status=HTTPStatus.FORBIDDEN)
 
-        form = request.json
+        form = request.json or {}
         form['licence_id'] = users_jwt['licence_id']
         errors = create_group_validator.validate(form)
+        if errors:
+            return error_message(str(errors), HTTPStatus.BAD_REQUEST)
+
         group = Group.query.filter_by(licence_id=form['licence_id'], name=form['name']).first()
         if group:
             return error_message(f'Group {form["name"]} already exists!', status=HTTPStatus.FORBIDDEN)  # status???
@@ -60,7 +63,39 @@ class GroupAPI(AbstractGroupAPI):
 
     @staticmethod
     def set_group(request, group_name):
-        return error_message('Not implemented yet!', status=HTTPStatus.NOT_FOUND)
+        users_jwt = get_JWT_from_cookie()
+        if not users_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
+
+        if not users_jwt['is_admin']:
+            return error_message('Forbidden', status=HTTPStatus.FORBIDDEN)
+
+        form = request.json or {}
+        form['licence_id'] = users_jwt['licence_id']
+
+        errors = set_group_data_validator.validate(form)
+        if errors:
+            return error_message(str(errors), HTTPStatus.BAD_REQUEST)
+
+        group = Group.query.filter_by(licence_id=form['licence_id'], name=group_name).first()
+        if not group:
+            return error_message(f'Group {group_name} does not exist!', HTTPStatus.NOT_FOUND)
+
+        group_to = GroupTO(group)
+        errors = group_to.set_data(form)
+        if errors:
+            return error_message(str(errors), HTTPStatus.BAD_REQUEST)
+
+        errors = group_to.update_model(group)
+        if errors:
+            return error_message(str(errors), HTTPStatus.BAD_REQUEST)
+
+        db.session.commit()
+
+        resp = make_response(jsonify(group_to.to_dict()))
+        resp.status_code = HTTPStatus.OK
+
+        return resp
 
     @staticmethod
     def delete_group(request, group_name):
