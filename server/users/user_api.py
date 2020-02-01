@@ -2,7 +2,7 @@ from flask import make_response, jsonify
 from http import HTTPStatus
 
 from server import db
-from server.utils import encode_JWT, decode_JWT, get_JWT_from_cookie, error_message, hash_password
+from server.utils import encode_JWT, get_JWT_from_cookie, error_message, hash_password
 from server.config import JWT_COOKIE_NAME
 from server.users.abstract_user_api import AbstractUserAPI
 from server.models.validators import login_validator, create_user_validator, set_user_data_validator, \

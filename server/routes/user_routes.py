@@ -1,4 +1,4 @@
-from flask import request, jsonify  # drop jsonify later
+from flask import request
 
 from server import app
 from server.config import URI_PREFIX

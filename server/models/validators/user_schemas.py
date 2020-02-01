@@ -1,5 +1,4 @@
 from marshmallow import Schema, fields, validates, ValidationError
-# from server import ma
 
 
 class CreateUserSchema(Schema):    
