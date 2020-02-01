@@ -99,4 +99,20 @@ class GroupAPI(AbstractGroupAPI):
 
     @staticmethod
     def delete_group(request, group_name):
-        return error_message('Not implemented yet!', status=HTTPStatus.NOT_FOUND)
+        users_jwt = get_JWT_from_cookie()
+        if not users_jwt:
+            return error_message('Unauthorized!', status=HTTPStatus.UNAUTHORIZED)
+
+        if not users_jwt['is_admin']:
+            return error_message('Forbidden', status=HTTPStatus.FORBIDDEN)
+
+        group = Group.query.filter_by(licence_id=users_jwt['licence_id'], name=group_name).first()
+        if not group:
+            return error_message(f'Group {group_name} does not exist!', HTTPStatus.NOT_FOUND)
+
+        db.session.delete(group)
+        db.session.commit()
+
+        resp = make_response()
+        resp.status_code = HTTPStatus.NO_CONTENT
+        return resp
