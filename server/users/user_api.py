@@ -6,7 +6,7 @@ from server.utils import encode_JWT, decode_JWT, get_JWT_from_cookie, error_mess
 from server.config import JWT_COOKIE_NAME
 from server.users.abstract_user_api import AbstractUserAPI
 from server.models.validators import login_validator, create_user_validator, set_user_data_validator, \
-    set_user_password_validator
+    set_user_password_validator, set_user_groups_validator
 from server.models.entity import User, Group
 from server.models.to import UserDetailsTO, UserInfoTO
 
@@ -219,16 +219,16 @@ class UserAPI(AbstractUserAPI):
             return error_message('Forbidden', status=HTTPStatus.FORBIDDEN)
 
         form = request.json or []
+        errors = set_user_groups_validator.validate({'groups': form})
+        if errors:
+            return error_message(str(errors), status=HTTPStatus.BAD_REQUEST)
 
         user = User.query.filter_by(id=user_id, licence_id=users_jwt['licence_id']).first()
         if not user:
             return error_message('User does not exist!', status=HTTPStatus.BAD_REQUEST)
 
-        for group_name in form:
-            group = Group.query.filter_by(licence_id=users_jwt['licence_id'], name=group_name).first()
-            if not group:
-                return error_message(f'Group {group_name} does not exist!', status=HTTPStatus.BAD_REQUEST)
-            user.groups.append(group)
+        groups = Group.query.filter_by(licence_id=users_jwt['licence_id']).filter(Group.name.in_(form)).all()
+        user.groups.extend(groups)
 
         db.session.commit()
 

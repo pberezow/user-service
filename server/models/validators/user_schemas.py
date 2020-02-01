@@ -58,3 +58,7 @@ class SetUserDataSchema(Schema):  # only admin
     first_name = fields.Str(required=False)
     last_name = fields.Str(required=False)
     position = fields.Str(required=False)
+
+
+class SetUserGroupsSchema(Schema):
+    groups = fields.List(fields.Str(), required=True)
