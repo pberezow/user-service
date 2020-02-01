@@ -1,4 +1,5 @@
 from .abstract_to import AbstractTO
+from .group_to import GroupTO
 from server.utils import encode_JWT
 
 
@@ -17,7 +18,7 @@ class UserDetailsTO(AbstractTO):
         self.first_name = user_model.first_name
         self.last_name = user_model.last_name
         self.position = user_model.position
-        self.groups = user_model.groups  # TODO
+        self.groups = [GroupTO(grp) for grp in user_model.groups]
 
     def get_jwt(self):
         jwt_payload = {
@@ -43,5 +44,5 @@ class UserDetailsTO(AbstractTO):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'position': self.position,
-            'groups': []  # TODO
+            'groups': [grp.to_dict() for grp in self.groups]
         }
