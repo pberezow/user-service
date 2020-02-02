@@ -31,7 +31,8 @@ class UserAPI(AbstractUserAPI):
 
         encoded_jwt = user.get_jwt()
 
-        resp = make_response(jsonify({JWT_COOKIE_NAME: encoded_jwt}))
+        # jsonify({JWT_COOKIE_NAME: encoded_jwt})
+        resp = make_response()
         resp.status_code = HTTPStatus.OK
         resp.set_cookie(JWT_COOKIE_NAME, encoded_jwt)
 
@@ -53,8 +54,9 @@ class UserAPI(AbstractUserAPI):
             users_jwt.pop('exp')
 
         encoded = encode_JWT(users_jwt)
-        
-        resp = make_response(jsonify({JWT_COOKIE_NAME: encoded}))
+
+        # jsonify({JWT_COOKIE_NAME: encoded})
+        resp = make_response()
         resp.status_code = HTTPStatus.OK
         resp.set_cookie(JWT_COOKIE_NAME, encoded)
         

@@ -13,7 +13,14 @@ def read_rsa_key(filename):
 # FLASK APP
 FLASK_APP = 'server/__init__.py'
 DEFAULT_IP = '0.0.0.0:3000'
-SQLALCHEMY_DATABASE_URI = 'sqlite:///../test.db'
+
+# DATABASE
+_DB_USER = 'user_service'
+_DB_PASSWORD = 'user_service'
+_POSTGRES_URL = 'localhost:5432'
+_DB_NAME = 'user_service_db'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=_DB_USER, pw=_DB_PASSWORD, url=_POSTGRES_URL, db=_DB_NAME)
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///../test.db'
 
 URI_PREFIX = '/api/v1/users'
 

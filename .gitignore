@@ -1,6 +1,8 @@
 __pycache__/
 *.db
+*.pyc
 .idea/
 .pytest_cache/
 .scannerwork/
 sonar-project.properties
+venv/
