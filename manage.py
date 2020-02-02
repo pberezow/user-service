@@ -53,7 +53,7 @@ cm.add(Command(
 cm.add(Command(
     "start",
     "runs server with gunicorn in a production setting",
-    lambda c: 'gunicorn -b {0}:{1} server:app'.format(c['host'], c['port']),
+    lambda c: 'gunicorn3 -b {0}:{1} server:app'.format(c['host'], c['port']),
     {
         'FLASK_APP': FLASK_APP,
         'FLASK_DEBUG': 'false'
