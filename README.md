@@ -1,4 +1,4 @@
-#Documentation
+# Documentation
 
 Service requires:
 - Python 3.6
@@ -19,7 +19,7 @@ This microservice handles all functionalities related to user actions, including
 - editing permission groups
 - assigning permission groups to user
 
-##Project Structure
+## Project Structure
 
 All implementation is located in server module. In server `__init__.py` there is all flask application 
 and Eureka related code. 
@@ -36,7 +36,7 @@ It also contains classes used to validate request payloads.
 There are also 2 modules, `users` and `groups`, which contains logic implementation to defined endpoints.
 
 
-##Running service
+## Running service
 First you should install everything required by app to run.
 
 When you want to run microservice, first you should run Eureka, then run command:
