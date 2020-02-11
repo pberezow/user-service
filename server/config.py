@@ -13,6 +13,7 @@ def read_rsa_key(filename):
 # FLASK APP
 FLASK_APP = 'server/__init__.py'
 DEFAULT_IP = '0.0.0.0:3000'
+DEFAULT_PORT = 3000
 
 # DATABASE
 _DB_USER = 'user_service'
@@ -36,3 +37,6 @@ JWT_COOKIE_NAME = 'token'
 # SALT for password encryption
 SALT_PRE = 'A#c.+!Y17asU'  # put this before password string
 SALT_POST = 'X$AY67!'  # put this after password string
+
+# EUREKA CONFIG
+EUREKA_IP = 'http://localhost:8081/eureka/'
