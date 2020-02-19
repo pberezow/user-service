@@ -15,6 +15,6 @@ from server.routes import *
 
 eureka_client.init(
                    eureka_server=EUREKA_IP,
-                   app_name='user_service',
+                   app_name='user-service',
                    instance_port=DEFAULT_PORT
 )

@@ -1,17 +1,12 @@
-FROM ubuntu:18.04
+#FROM ubuntu:18.04
+FROM python:3.6-slim-buster
 
-RUN apt-get update -y && \
-    apt-get install -y python3.6 python3-pip gunicorn3
+RUN apt-get update -y && apt-get install -y gunicorn3
 
 WORKDIR /app
 
 COPY . .
 
-#RUN ["source", "./venv/bin/activate"]
-#RUN apt-get install -y gcc
+RUN pip install -r requirements.txt
 
-RUN pip3 install -r requirements.txt
-
-RUN pip3 list
-
-CMD python3 manage.py start
+CMD python manage.py start

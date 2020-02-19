@@ -39,4 +39,4 @@ SALT_PRE = 'A#c.+!Y17asU'  # put this before password string
 SALT_POST = 'X$AY67!'  # put this after password string
 
 # EUREKA CONFIG
-EUREKA_IP = 'http://localhost:8081/eureka/'
+EUREKA_IP = 'eureka:8081/eureka/'
