@@ -1,12 +1,13 @@
-#FROM ubuntu:18.04
-FROM python:3.6-slim-buster
-
-RUN apt-get update -y && apt-get install -y gunicorn3
+FROM python:3.8-slim-buster
 
 WORKDIR /app
 
 COPY . .
 
-RUN pip install -r requirements.txt
+# RUN pip3 install gunicorn
+RUN pip3 install -r requirements.txt
 
-CMD python manage.py start
+RUN python3 --version
+
+#CMD python manage.py runserver
+CMD gunicorn user_service.wsgi
