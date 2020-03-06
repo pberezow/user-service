@@ -6,7 +6,7 @@ from user.models import User
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        if User.objects.filter(username='admin') == 0:
+        if User.objects.filter(username='admin').count() == 0:
             print('Creating admin account with credentials: admin / admin123')
             data = {
                 'username': 'admin',
