@@ -21,10 +21,10 @@ from rest_framework_simplejwt.views import TokenRefreshSlidingView as RefreshTok
 from user.views import RegisterView, UsersListView, UserDetailsView, SetUserGroupsView, LogoutView, SetUsersPasswordView, FooView
 from group.views import GroupDetailsView, GroupListCreateView
 
-prefix = 'api/v1/users/'
+prefix = ''
 
 urlpatterns = [
-    path('', FooView.as_view(), name='foo'),
+    path('health/', FooView.as_view(), name='foo'),
     # JWT endpoints
     path(f'{prefix}login/', LoginView.as_view(), name='user-login'),
     path(f'{prefix}token/refresh/', RefreshTokenView.as_view(), name='user-token-refresh'),

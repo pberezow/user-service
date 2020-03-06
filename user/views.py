@@ -225,4 +225,4 @@ class SetUserGroupsView(UpdateAPIView):  # PUT
 
 class FooView(ListAPIView):
     def list(self, request, *args, **kwargs):
-        return Response({'test': 'test'})
+        return Response({'status': 'UP'})

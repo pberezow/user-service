@@ -12,4 +12,8 @@ python manage.py flush --no-input
 python manage.py migrate
 python manage.py initadmin
 
-exec "$@"
+set -m
+gunicorn user_service.wsgi &
+/opt/java/openjdk/bin/java -jar /sidecar/app.jar
+fg %1
+
