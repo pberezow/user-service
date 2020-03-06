@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#while ! nc -z 127.0.0.1 5432; do
-    echo "Waiting for postgres..."
-    sleep 5
-#done
+while ! nc -z $POSTGRES_HOST $POSTGRES_PORT; do
+  >&2 echo "Waiting for postgres..."
+  sleep 0.1
+done
 
 echo "PostgreSQL started"
 
