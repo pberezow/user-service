@@ -27,7 +27,7 @@ SECRET_KEY = '94p8wn0=o=dx02e7()f=ny@7kna-7_ynmf+5mo)hdq&=!(mjnu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']  # ['localhost', '127.0.0.1', '[::1]']  # ['*']
 
 
 # Application definition
@@ -61,6 +61,9 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
     )
 }
 
@@ -122,7 +125,7 @@ DATABASES = {
         'NAME': os.environ.get('POSTGRES_DB_NAME', 'user_db'),
         'USER': os.environ.get('POSTGRES_USER', 'postgres'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('POSTGRES_HOST', '127.0.0.1'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
         'CONN_MAX_AGE': None,
         'TEST': {
@@ -130,6 +133,8 @@ DATABASES = {
         }
     }
 }
+
+# print(DATABASES)
 
 EUREKA = {
     'HOST': 'http://eureka:8081/eureka/',

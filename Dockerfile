@@ -7,7 +7,12 @@ COPY . .
 # RUN pip3 install gunicorn
 RUN pip3 install -r requirements.txt
 
-RUN python3 --version
+#RUN python3 --version
+#
+#EXPOSE 8001
 
-#CMD python manage.py runserver
-CMD gunicorn user_service.wsgi
+ENTRYPOINT ["./entrypoint.sh"]
+
+
+#CMD python manage.py runserver 0.0.0.0:8000
+#CMD gunicorn user_service.wsgi
