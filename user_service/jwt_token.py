@@ -8,7 +8,6 @@ class CustomTokenSerializer(TokenObtainSlidingSerializer):
         token = super().get_token(user)
 
         # Add custom claims
-        token['id'] = user.id
         token['licence_id'] = user.licence_id
         token['username'] = user.username
         token['email'] = user.email
