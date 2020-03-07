@@ -6,24 +6,22 @@ from user.models import User
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        if User.objects.filter(username='admin').count() == 0:
-            print('Creating admin account with credentials: admin / admin123')
-            data = {
-                'username': 'admin',
-                'password': 'admin123',
-                'licence_id': 1,
-                'email': 'wojtczitolamus@gmail.com',
-                'is_admin': True
-            }
-            admin = User.objects.create_superuser(**data)
-            # for user in settings.ADMINS:
-            #     username = user[0].replace(' ', '')
-            #     email = user[1]
-            #     password = 'admin'
-            #     print('Creating account for %s (%s)' % (username, email))
-            #     admin = Account.objects.create_superuser(email=email, username=username, password=password)
-            #     admin.is_active = True
-            #     admin.is_admin = True
-            #     admin.save()
-        else:
-            print('Admin accounts can only be initialized if no Accounts exist')
+        for user in settings.ADMINS:
+
+            try:
+                if User.objects.filter(username=user[0]).count() == 0:
+                    print(f'Creating admin account with credentials: {user[0]} / {user[1]}')
+                    data = {
+                        'username': user[0],
+                        'password': user[1],
+                        'licence_id': 1,
+                        'email': user[2],
+                        'is_admin': True
+                    }
+                    admin = User.objects.create_superuser(**data)
+
+                else:
+                    print(f'Admin {user[0]} already exists.')
+
+            except IndexError as e:
+                print('Cannot create user - IndexError (See settings.ADMINS)')

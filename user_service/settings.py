@@ -27,8 +27,15 @@ SECRET_KEY = '94p8wn0=o=dx02e7()f=ny@7kna-7_ynmf+5mo)hdq&=!(mjnu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+APPEND_SLASH = True
+
 ALLOWED_HOSTS = ['*']  # ['localhost', '127.0.0.1', '[::1]']  # ['*']
 
+# ADMINS correct format - (username, password, email) - TODO move to env vars
+ADMINS = [
+    ('pberezow', 'admin123', 'asd@asd.pl'),
+    ('wzaniewski', 'admin123', 'qwe@qwe.pl'),
+]
 
 # Application definition
 
@@ -127,15 +134,14 @@ DATABASES = {
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-        'CONN_MAX_AGE': None,
+        'CONN_MAX_AGE': None,  # UNLIMITED
         'TEST': {
             'NAME': 'user_test_db',
         }
     }
 }
 
-# print(DATABASES)
-
+# Eureka moved to sidecar
 EUREKA = {
     'HOST': 'http://eureka:8081/eureka/',
     'DOCKER_PORT': os.environ.get('DOCKER_PORT', '8000'),

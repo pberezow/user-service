@@ -18,26 +18,22 @@ from django.urls import path, include
 
 from .jwt_token import CustomTokenView as LoginView
 from rest_framework_simplejwt.views import TokenRefreshSlidingView as RefreshTokenView
-from user.views import RegisterView, UsersListView, UserDetailsView, SetUserGroupsView, LogoutView, SetUsersPasswordView, FooView
-from group.views import GroupDetailsView, GroupListCreateView
+from user.views import FooView
 
 prefix = ''
 
 urlpatterns = [
     path('health/', FooView.as_view(), name='foo'),
+
     # JWT endpoints
     path(f'{prefix}login/', LoginView.as_view(), name='user-login'),
     path(f'{prefix}token/refresh/', RefreshTokenView.as_view(), name='user-token-refresh'),
-    # user app endpoints
-    path(f'{prefix}logout/', LogoutView.as_view(), name='user-logout'),
-    path(f'{prefix}register/', RegisterView.as_view(), name='user-register'),
-    path(f'{prefix}', UsersListView.as_view(), name='user-list'),
-    path(f'{prefix}<int:user_id>/', UserDetailsView.as_view(), name='user-details'),
-    path(f'{prefix}<int:user_id>/password/', SetUsersPasswordView.as_view(), name='user-set-password'),
-    path(f'{prefix}<int:user_id>/permissions/', SetUserGroupsView.as_view(), name='user-permissions'),
-    # group app endpoints
-    path(f'{prefix}permissions/', GroupListCreateView.as_view(), name='group-list-create'),
-    path(f'{prefix}permissions/<str:group_name>/', GroupDetailsView.as_view(), name='group-details'),
 
-    path('admin/', admin.site.urls),
+    # user app endpoints
+    path('', include('user.urls')),
+
+    # group app endpoints
+    path(f'{prefix}permissions/', include('group.urls')),
 ]
+
+

@@ -3,8 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from group.models import Group
 
 
-# Create your models here.
-
 class User(AbstractUser):
     licence_id = models.IntegerField(null=False, blank=False)
     is_admin = models.BooleanField(default=False)

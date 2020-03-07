@@ -6,3 +6,5 @@ __pycache__/
 .scannerwork/
 sonar-project.properties
 venv/
+*.sqlite3
+docker-compose.yml

@@ -1,14 +1,15 @@
 from rest_framework import serializers
-from user.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.contrib.auth.password_validation import get_default_password_validators, validate_password
+from django.contrib.auth.password_validation import validate_password
+
 from group.serializers import GroupSerializer
+from user.models import User
 from group.models import Group
 
 
 class CreateUserSerializer(serializers.Serializer):
     """
-    Used in /users/register endpoint
+    Used in /register endpoint
     """
     licence_id = serializers.IntegerField(required=True)
     username = serializers.CharField(max_length=150, required=True, validators=[UnicodeUsernameValidator()],
@@ -29,8 +30,8 @@ class CreateUserSerializer(serializers.Serializer):
 class UserDetailsSerializer(serializers.ModelSerializer):
     """
     Used in details view + update/retrieve user data
-    /users
-    /users/<id>
+    /
+    /<id>
     """
     groups = GroupSerializer(required=False, many=True)
 
@@ -72,6 +73,10 @@ class UserSimpleSerializer(serializers.ModelSerializer):
 
 
 class UserSetPasswordSerializer(serializers.ModelSerializer):
+    """
+    Used in SetUsersPasswordView
+    /<id>/password
+    """
     old_password = serializers.CharField(max_length=128, required=False)
 
     class Meta:
@@ -98,6 +103,7 @@ class UserSetPasswordSerializer(serializers.ModelSerializer):
 class UserSetGroupSerializer(serializers.ModelSerializer):
     """
     Used in set user's groups endpoint
+    NOT WORKING - done workaround in user.views - SetUserGroupsView
     """
     groups = GroupSerializer(many=True, read_only=False)
 

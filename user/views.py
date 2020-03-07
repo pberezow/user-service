@@ -12,8 +12,7 @@ from user.serializers import UserDetailsSerializer, UserSimpleSerializer, Create
     UserSetPasswordSerializer
 from user_service.permissions import IsAdminUser, IsSpecifiedUser
 
-
-# Create your views here.
+# TODO - Add custom error messages
 
 
 class RegisterView(CreateAPIView):  # POST
@@ -174,6 +173,7 @@ class SetUsersPasswordView(UpdateAPIView):
 
 
 class SetAvatarView(UpdateAPIView):  # PUT
+    # TODO
     pass
 
 
@@ -191,9 +191,6 @@ class SetUserGroupsView(UpdateAPIView):  # PUT
 
     def update(self, request, *args, **kwargs):
         user_id = self.kwargs['user_id']
-
-        # if not request.user.is_admin:
-        #     return Response(status=HTTP_403_FORBIDDEN)
 
         user = self.get_queryset().filter(pk=user_id)
         if not user.exists():
