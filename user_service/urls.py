@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 from .jwt_token import CustomTokenView as LoginView
-from rest_framework_simplejwt.views import TokenRefreshSlidingView as RefreshTokenView
+from .jwt_token import CustomTokenRefreshView as RefreshTokenView
+# from rest_framework_simplejwt.views import TokenRefreshSlidingView as RefreshTokenView
 from user.views import FooView
 
 prefix = ''
