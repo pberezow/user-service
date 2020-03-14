@@ -142,7 +142,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-        'CONN_MAX_AGE': None,  # UNLIMITED
+        'CONN_MAX_AGE': 0,  # (None,  # UNLIMITED) https://github.com/benoitc/gunicorn/issues/996
         'TEST': {
             'NAME': 'user_test_db',
         }
