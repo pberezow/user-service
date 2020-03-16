@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from django.db.utils import IntegrityError
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated
-from user_service.permissions import IsAdminUser
+from user_service.permissions import IsAdminUser, CustomIsAuthenticated as IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_302_FOUND, HTTP_204_NO_CONTENT, HTTP_201_CREATED
 from group.serializers import GroupSerializer

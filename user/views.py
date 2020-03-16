@@ -1,7 +1,6 @@
 from django.db.utils import IntegrityError
 from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView, \
     RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_302_FOUND, \
     HTTP_204_NO_CONTENT, HTTP_201_CREATED
@@ -10,7 +9,7 @@ from group.models import Group
 from user.models import User
 from user.serializers import UserDetailsSerializer, UserSimpleSerializer, CreateUserSerializer, UserSetGroupSerializer, \
     UserSetPasswordSerializer
-from user_service.permissions import IsAdminUser, IsSpecifiedUser
+from user_service.permissions import IsAdminUser, IsSpecifiedUser, CustomIsAuthenticated as IsAuthenticated
 
 # TODO - Add custom error messages
 
