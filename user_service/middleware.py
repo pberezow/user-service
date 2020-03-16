@@ -37,8 +37,12 @@ def cross_origin_middleware(get_response):
         # before request being handle
 
         response = get_response(request)
-        response['Access-Control-Allow-Origin'] = settings.ACCESS_CONTROL_ALLOW_ORIGIN
-        response['Access-Control-Allow-Headers'] = ', '.join(settings.ACCESS_CONTROL_ALLOW_HEADERS)
+        response['Access-Control-Allow-Origin'] = request.headers.get('Origin', settings.ACCESS_CONTROL_ALLOW_ORIGIN)
+        response['Access-Control-Allow-Credentials'] = 'true'  # for axios withCredentials option
+        if request.method == 'OPTIONS':
+            response['Access-Control-Allow-Headers'] = ', '.join(settings.ACCESS_CONTROL_ALLOW_HEADERS) or '*'
+            # response['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,UPDATE,OPTIONS'
+            response['Access-Control-Max-Age'] = '1728000'  # for OPTIONS caching
 
         return response
 

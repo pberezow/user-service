@@ -70,7 +70,7 @@ MIDDLEWARE = [
 
 # config for cross_origin_middleware
 ACCESS_CONTROL_ALLOW_ORIGIN = '*'
-ACCESS_CONTROL_ALLOW_HEADERS = ['Origin', 'Content-Type', 'Accept']
+ACCESS_CONTROL_ALLOW_HEADERS = ['Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'X-HTTP-Method-Override']
 
 
 REST_FRAMEWORK = {
