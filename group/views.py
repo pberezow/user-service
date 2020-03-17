@@ -7,6 +7,8 @@ from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST, HTTP
 from group.serializers import GroupSerializer
 from group.models import Group
 
+from user_service.exceptions import CustomException, DatabaseError
+
 
 class GroupListCreateView(ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsAdminUser]
@@ -27,7 +29,7 @@ class GroupListCreateView(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         form = request.data
         if not form:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E312')
 
         form['licence_id'] = request.user.licence_id
 
@@ -37,7 +39,7 @@ class GroupListCreateView(ListCreateAPIView):
         try:
             group_instance = group.save()
         except IntegrityError as e:
-            return Response({'details': e.__repr__()}, status=HTTP_400_BAD_REQUEST)
+            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E313')
 
         return Response(group.validated_data, status=HTTP_201_CREATED)
 
@@ -53,7 +55,7 @@ class GroupDetailsView(RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         group = self.get_queryset().filter(name=self.kwargs['group_name'])
         if not group.exists():
-            return Response(status=HTTP_404_NOT_FOUND)
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E310')
         else:
             group = group.get()
 
@@ -64,7 +66,7 @@ class GroupDetailsView(RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         group = self.get_queryset().filter(name=self.kwargs['group_name'])
         if not group.exists():
-            return Response(status=HTTP_404_NOT_FOUND)
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E310')
         else:
             group = group.get()
 
@@ -73,20 +75,20 @@ class GroupDetailsView(RetrieveUpdateDestroyAPIView):
         try:
             group_to.save()
         except IntegrityError as e:
-            return Response({'details': e.__repr__()}, status=HTTP_400_BAD_REQUEST)
+            raise DatabaseError(error_message=e.__repr__())
 
         return Response(group_to.data)
 
     def destroy(self, request, *args, **kwargs):
         group = self.get_queryset().filter(name=self.kwargs['group_name'])
         if not group.exists():
-            return Response(status=HTTP_404_NOT_FOUND)
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E310')
         else:
             group = group.get()
 
         try:
             group.delete()
         except IntegrityError as e:
-            return Response({'details': e.__repr__()}, status=HTTP_400_BAD_REQUEST)
+            raise DatabaseError(error_message=e.__repr__())
 
         return Response(status=HTTP_204_NO_CONTENT)

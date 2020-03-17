@@ -6,7 +6,7 @@ from user.models import User
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        for user in settings.ADMINS:
+        for user in settings.ADMINS_DATA:
 
             try:
                 if User.objects.filter(username=user[0]).count() == 0:

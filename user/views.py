@@ -10,6 +10,7 @@ from user.models import User
 from user.serializers import UserDetailsSerializer, UserSimpleSerializer, CreateUserSerializer, UserSetGroupSerializer, \
     UserSetPasswordSerializer
 from user_service.permissions import IsAdminUser, IsSpecifiedUser, CustomIsAuthenticated as IsAuthenticated
+from user_service.exceptions import CustomException, DatabaseError
 
 # TODO - Add custom error messages
 
@@ -22,10 +23,8 @@ class RegisterView(CreateAPIView):  # POST
     serializer_class = CreateUserSerializer
 
     def create(self, request, *args, **kwargs):
-        # if not request.user.is_admin:
-        #     return Response({'error': 'Only admin can create new users!'}, status=HTTP_403_FORBIDDEN)
 
-        form_data = request.data
+        form_data = request.data or {}
         form_data['licence_id'] = request.user.licence_id
 
         serializer = self.get_serializer_class()
@@ -35,7 +34,7 @@ class RegisterView(CreateAPIView):  # POST
         try:
             user_instance = user.save()
         except IntegrityError as e:
-            return Response({'details': e.__repr__()}, status=HTTP_400_BAD_REQUEST)
+            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E304', error_message=e.__repr__())
 
         user_to = UserDetailsSerializer(user_instance)
 
@@ -100,7 +99,7 @@ class UserDetailsView(RetrieveUpdateDestroyAPIView):  # GET, PUT, DELETE
 
         user = self.get_queryset().filter(pk=user_id)
         if not user.exists():
-            return Response(status=HTTP_404_NOT_FOUND)
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E306')
         user = user.get()
 
         serializer = self.get_serializer_class()
@@ -112,11 +111,11 @@ class UserDetailsView(RetrieveUpdateDestroyAPIView):  # GET, PUT, DELETE
         user_id = self.kwargs['user_id']
 
         if not request.user.is_admin and request.user.pk != user_id:
-            return Response(status=HTTP_403_FORBIDDEN)
+            raise CustomException(status_code=HTTP_403_FORBIDDEN, error_code='E305')
 
         user = self.get_queryset().filter(pk=user_id)
         if not user.exists():
-            return Response(status=HTTP_404_NOT_FOUND)
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E306')
         user = user.get()
 
         serializer = self.get_serializer_class()
@@ -132,11 +131,11 @@ class UserDetailsView(RetrieveUpdateDestroyAPIView):  # GET, PUT, DELETE
         user_id = self.kwargs['user_id']
 
         if not request.user.is_admin:
-            return Response(status=HTTP_403_FORBIDDEN)
+            raise CustomException(status_code=HTTP_403_FORBIDDEN, error_code='E002')
 
         user = self.get_queryset().filter(pk=user_id)
         if not user.exists():
-            return Response(status=HTTP_404_NOT_FOUND)
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E306')
         user = user.get()
 
         user.is_active = False
@@ -160,7 +159,7 @@ class SetUsersPasswordView(UpdateAPIView):
 
         user = self.get_queryset().filter(pk=user_id)
         if not user.exists():
-            return Response(status=HTTP_404_NOT_FOUND)
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E306')
         user = user.get()
 
         serializer = self.get_serializer_class()
@@ -193,21 +192,21 @@ class SetUserGroupsView(UpdateAPIView):  # PUT
 
         user = self.get_queryset().filter(pk=user_id)
         if not user.exists():
-            return Response(status=HTTP_404_NOT_FOUND)
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E306')
         user = user.get()
 
         serializer = self.get_serializer_class()
         groups = request.data.get('groups', None)
         if groups is None:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E312')
 
         try:
             groups_instances = Group.objects.filter(licence_id=user.licence_id, name__in=[g['name'] for g in groups])
         except KeyError as e:
-            return Response(status=HTTP_400_BAD_REQUEST)
+            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E311')
 
         if len([g['name'] for g in groups]) != groups_instances.count():
-            return Response(status=HTTP_400_BAD_REQUEST)
+            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E310')
 
         user.groups.clear()
         for group in groups_instances:

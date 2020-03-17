@@ -32,7 +32,7 @@ APPEND_SLASH = True
 ALLOWED_HOSTS = ['*']  # ['localhost', '127.0.0.1', '[::1]']  # ['*']
 
 # ADMINS correct format - (username, password, email) - TODO move to env vars
-ADMINS = [
+ADMINS_DATA = [
     ('pberezow', 'admin123', 'asd@asd.pl'),
     ('wzaniewski', 'admin123', 'qwe@qwe.pl'),
 ]
@@ -74,6 +74,7 @@ ACCESS_CONTROL_ALLOW_HEADERS = ['Origin', 'Content-Type', 'Accept', 'Authorizati
 
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'user_service.exceptions.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
