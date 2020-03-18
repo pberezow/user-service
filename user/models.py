@@ -10,3 +10,8 @@ class User(AbstractUser):
     address = models.CharField(max_length=100, blank=True)
     position = models.CharField(max_length=30, blank=True)
     groups = models.ManyToManyField(Group)
+
+
+class ResetPasswordToken(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='token')
+    token = models.CharField(unique=True, max_length=600, blank=False, null=False)

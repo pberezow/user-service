@@ -4,11 +4,13 @@ from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, R
 from rest_framework.response import Response
 from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_302_FOUND, \
     HTTP_204_NO_CONTENT, HTTP_201_CREATED
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
 
 from group.models import Group
-from user.models import User
+from user.models import User, ResetPasswordToken
 from user.serializers import UserDetailsSerializer, UserSimpleSerializer, CreateUserSerializer, UserSetGroupSerializer, \
-    UserSetPasswordSerializer
+    UserSetPasswordSerializer, ResetPasswordTokenSerializer, ResetPasswordSerializer
 from user_service.permissions import IsAdminUser, IsSpecifiedUser, CustomIsAuthenticated as IsAuthenticated
 from user_service.exceptions import CustomException, DatabaseError
 
@@ -221,3 +223,69 @@ class SetUserGroupsView(UpdateAPIView):  # PUT
 class FooView(ListAPIView):
     def list(self, request, *args, **kwargs):
         return Response({'status': 'UP'})
+
+
+class CreateResetTokenView(CreateAPIView):
+    from rest_framework.permissions import AllowAny
+    permission_classes = [AllowAny]
+    serializer_class = ResetPasswordTokenSerializer
+
+    def create(self, request, *args, **kwargs):
+        form_data = request.data or {}
+
+        serializer = self.get_serializer_class()
+        token = serializer(data=form_data)
+        token.is_valid(raise_exception=True)
+
+        user = User.objects.filter(email=form_data['email'])
+        if not user.exists():
+            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E009', error_message='User with submitted email does not exist')
+        user = user.get()
+
+        token_instance = token.save(user=user)
+
+        msg_context = {
+            'first_name': user.first_name,
+            'reset_page': f'http://localhost:3000/reset?token={token_instance.token}'
+        }
+
+        template = render_to_string('reset_password_message.html', context=msg_context)
+        send_mail('Reset hasła - Sili',
+                  template,
+                  'sili20.test@gmail.com',
+                  [user.email])
+
+        return Response({'details': 'Reset token created'})
+
+
+class ValidateResetTokenView(CreateAPIView):
+    permission_classes = []
+    serializer_class = ResetPasswordTokenSerializer
+
+    def create(self, request, *args, **kwargs):
+        form_data = request.data or {}
+        if form_data.get('token', None) is None:
+            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E007')
+
+        token_instance = ResetPasswordToken.objects.filter(token=form_data['token'])
+        if not token_instance.exists():
+            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E008')
+        token_instance = token_instance.get()
+
+        return Response(token_instance.token)
+
+
+class ResetPasswordView(CreateAPIView):
+    permission_classes = []
+    serializer_class = ResetPasswordSerializer
+
+    def create(self, request, *args, **kwargs):
+        form_data = request.data or {}
+        serializer = self.get_serializer_class()
+
+        reset_token = serializer(data=form_data)
+        reset_token.is_valid(raise_exception=True)
+
+        user = reset_token.save()
+
+        return Response({'details': 'Password changed'})

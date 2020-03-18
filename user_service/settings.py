@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '94p8wn0=o=dx02e7()f=ny@7kna-7_ynmf+5mo)hdq&=!(mjnu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 APPEND_SLASH = True
 
@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['*']  # ['localhost', '127.0.0.1', '[::1]']  # ['*']
 
 # ADMINS correct format - (username, password, email) - TODO move to env vars
 ADMINS_DATA = [
-    ('pberezow', 'admin123', 'asd@asd.pl'),
+    ('pberezow', 'admin123', 'pitusx357@gmail.com'),
     ('wzaniewski', 'admin123', 'qwe@qwe.pl'),
 ]
 
@@ -194,3 +194,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# mail - sili20.test@gmail.com/sili123asd
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # testing
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'sili20.test@gmail.com'
+EMAIL_HOST_PASSWORD = 'sili123asd'
+EMAIL_PORT = 465  # 587  # 465
+# EMAIL_USE_TLS = True
+EMAIL_USE_SSL = True
+EMAIL_TIMEOUT = None
