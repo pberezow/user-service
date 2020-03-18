@@ -176,4 +176,5 @@ class ResetPasswordSerializer(serializers.Serializer):
         user = token_instance.user
         user.set_password(validated_data['password'])
         user.save(update_fields=["password"])
+        token_instance.delete()
         return user
