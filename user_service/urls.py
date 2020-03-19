@@ -13,28 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
 
-from .jwt_token import CustomTokenView as LoginView
-from .jwt_token import CustomTokenRefreshView as RefreshTokenView
-# from rest_framework_simplejwt.views import TokenRefreshSlidingView as RefreshTokenView
-from user.views import FooView
 
 prefix = ''
 
 urlpatterns = [
-    path('health/', FooView.as_view(), name='foo'),
-
-    # JWT endpoints
-    path(f'{prefix}login/', LoginView.as_view(), name='user-login'),
-    path(f'{prefix}token/refresh/', RefreshTokenView.as_view(), name='user-token-refresh'),
-
     # user app endpoints
-    path('', include('user.urls')),
+    path(prefix, include('user.urls')),
 
     # group app endpoints
     path(f'{prefix}permissions/', include('group.urls')),
 ]
-
-

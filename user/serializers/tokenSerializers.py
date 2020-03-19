@@ -1,6 +1,5 @@
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenObtainSlidingSerializer, TokenRefreshSlidingSerializer, SlidingToken
-from rest_framework_simplejwt.views import TokenObtainSlidingView, TokenRefreshSlidingView
 from rest_framework_simplejwt.settings import api_settings
 from django.utils.translation import ugettext_lazy as _
 
@@ -31,15 +30,6 @@ class CustomTokenSerializer(TokenObtainSlidingSerializer):
         token = set_additional_payload(token, user)
 
         return token
-
-
-class CustomTokenView(TokenObtainSlidingView):
-    serializer_class = CustomTokenSerializer
-
-    def post(self, request, *args, **kwargs):
-        resp = super().post(request, *args, **kwargs)
-        resp.set_cookie('token', resp.data['token'])
-        return resp
 
 
 class CustomJWTDecoder:
@@ -109,12 +99,3 @@ class CustomTokenRefreshSerializer(TokenRefreshSlidingSerializer):
         token.set_exp()
 
         return {'token': str(token)}
-
-
-class CustomTokenRefreshView(TokenRefreshSlidingView):
-    serializer_class = CustomTokenRefreshSerializer
-
-    def post(self, request, *args, **kwargs):
-        resp = super().post(request, *args, **kwargs)
-        resp.set_cookie('token', resp.data['token'])
-        return resp

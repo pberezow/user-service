@@ -4,45 +4,42 @@ Middleware which adds 'Access-Control-Allow-Origin' header to every response
 from django.conf import settings
 
 
+DEFAULT_ACCESS_CONTROL_ALLOW_ORIGIN = '*'
+DEFAULT_ACCESS_CONTROL_ALLOW_HEADERS = '*'
+DEFAULT_ACCESS_CONTROL_ALLOW_CREDENTIALS = 'true'
+DEFAULT_ACCESS_CONTROL_MAX_AGE = '1728000'
+
+
 def get(key, default):
     return getattr(settings, key, default)
 
 
 def cross_origin_middleware(get_response):
     # one-time configuration and initialization
-    def empty_middleware(request):
-        return get_response(request)
+    origin = get('ACCESS_CONTROL_ALLOW_ORIGIN', DEFAULT_ACCESS_CONTROL_ALLOW_ORIGIN)
+    headers = get('ACCESS_CONTROL_ALLOW_HEADERS', DEFAULT_ACCESS_CONTROL_ALLOW_HEADERS)
+    credentials = get('ACCESS_CONTROL_ALLOW_CREDENTIALS', DEFAULT_ACCESS_CONTROL_ALLOW_CREDENTIALS)
+    max_age = get('ACCESS_CONTROL_MAX_AGE', DEFAULT_ACCESS_CONTROL_MAX_AGE)
 
-    origin = get('ACCESS_CONTROL_ALLOW_ORIGIN', None)
-    headers = get('ACCESS_CONTROL_ALLOW_HEADERS', None)
+    if isinstance(headers, list) or isinstance(headers, set):
+        try:
+            ','.join(headers)
+        except Exception as e:
+            headers = DEFAULT_ACCESS_CONTROL_ALLOW_HEADERS
 
-    if not origin or not headers:
-        print('>>> Cross Origin middleware config is missing!')
-        return empty_middleware
-
-    if not type(headers) == list or type(headers) == set:
-        print('>>> type of ACCESS_CONTROL_ALLOW_HEADERS have to be list or set!')
-        return empty_middleware
-
-    for header in headers:
-        if not type(header) == str:
-            print('>>> type of all ACCESS_CONTROL_ALLOW_HEADERS elements have to be str!')
-            return empty_middleware
-
-    if not type(origin) == str:
-        print('>>> type of ACCESS_CONTROL_ALLOW_ORIGIN have to be str!')
-        return empty_middleware
+    if credentials not in ('true', 'false'):
+        credentials = 'true'
 
     def middleware(request):
         # before request being handle
 
         response = get_response(request)
-        response['Access-Control-Allow-Origin'] = request.headers.get('Origin', settings.ACCESS_CONTROL_ALLOW_ORIGIN)
-        response['Access-Control-Allow-Credentials'] = 'true'  # for axios withCredentials option
+
+        response['Access-Control-Allow-Origin'] = origin or request.headers.get('Origin', DEFAULT_ACCESS_CONTROL_ALLOW_ORIGIN)
+        response['Access-Control-Allow-Credentials'] = credentials  # for axios withCredentials option
         if request.method == 'OPTIONS':
-            response['Access-Control-Allow-Headers'] = ', '.join(settings.ACCESS_CONTROL_ALLOW_HEADERS) or '*'
-            # response['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,UPDATE,OPTIONS'
-            response['Access-Control-Max-Age'] = '1728000'  # for OPTIONS caching
+            response['Access-Control-Allow-Headers'] = headers or DEFAULT_ACCESS_CONTROL_ALLOW_HEADERS
+            response['Access-Control-Max-Age'] = max_age or DEFAULT_ACCESS_CONTROL_MAX_AGE  # for OPTIONS caching
 
         return response
 

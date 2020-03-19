@@ -7,7 +7,7 @@ from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST, HTTP
 from group.serializers import GroupSerializer
 from group.models import Group
 
-from user_service.exceptions import CustomException, DatabaseError
+from user_service.exceptions import GroupAlreadyExists, InvalidRequestData, GroupDoesNotExist
 
 
 class GroupListCreateView(ListCreateAPIView):
@@ -29,7 +29,7 @@ class GroupListCreateView(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         form = request.data
         if not form:
-            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E312')
+            raise InvalidRequestData()
 
         form['licence_id'] = request.user.licence_id
 
@@ -39,7 +39,7 @@ class GroupListCreateView(ListCreateAPIView):
         try:
             group_instance = group.save()
         except IntegrityError as e:
-            raise CustomException(status_code=HTTP_400_BAD_REQUEST, error_code='E313')
+            raise GroupAlreadyExists()
 
         return Response(group.validated_data, status=HTTP_201_CREATED)
 
@@ -55,9 +55,8 @@ class GroupDetailsView(RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         group = self.get_queryset().filter(name=self.kwargs['group_name'])
         if not group.exists():
-            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E310')
-        else:
-            group = group.get()
+            raise GroupDoesNotExist
+        group = group.get()
 
         group_to = self.get_serializer_class()(group)
 
@@ -66,29 +65,24 @@ class GroupDetailsView(RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         group = self.get_queryset().filter(name=self.kwargs['group_name'])
         if not group.exists():
-            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E310')
-        else:
-            group = group.get()
+            raise GroupDoesNotExist()
+        group = group.get()
 
         group_to = self.get_serializer_class()(group, data=request.data)
         group_to.is_valid(raise_exception=True)
         try:
             group_to.save()
         except IntegrityError as e:
-            raise DatabaseError(error_message=e.__repr__())
+            raise GroupAlreadyExists()
 
         return Response(group_to.data)
 
     def destroy(self, request, *args, **kwargs):
         group = self.get_queryset().filter(name=self.kwargs['group_name'])
         if not group.exists():
-            raise CustomException(status_code=HTTP_404_NOT_FOUND, error_code='E310')
-        else:
-            group = group.get()
+            raise GroupDoesNotExist()
+        group = group.get()
 
-        try:
-            group.delete()
-        except IntegrityError as e:
-            raise DatabaseError(error_message=e.__repr__())
+        group.delete()
 
         return Response(status=HTTP_204_NO_CONTENT)

@@ -25,17 +25,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '94p8wn0=o=dx02e7()f=ny@7kna-7_ynmf+5mo)hdq&=!(mjnu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 APPEND_SLASH = True
 
 ALLOWED_HOSTS = ['*']  # ['localhost', '127.0.0.1', '[::1]']  # ['*']
 
+AUTH_USER_MODEL = 'user.User'
+
+
+# Admins for initadmin command
 # ADMINS correct format - (username, password, email) - TODO move to env vars
 ADMINS_DATA = [
     ('pberezow', 'admin123', 'pitusx357@gmail.com'),
-    ('wzaniewski', 'admin123', 'qwe@qwe.pl'),
+    ('wzaniewski', 'admin123', 'zaniewski.wojciech97@gmail.com'),
 ]
+
 
 # Application definition
 
@@ -53,7 +58,6 @@ INSTALLED_APPS = [
     'user',
 ]
 
-AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,15 +68,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # Add Access-Control-Allow-Origin header
+    # Middleware for CORS
     'user_service.middleware.cross_origin_middleware',
 ]
 
-# config for cross_origin_middleware
+
+# Config for cross_origin_middleware
 ACCESS_CONTROL_ALLOW_ORIGIN = '*'
 ACCESS_CONTROL_ALLOW_HEADERS = ['Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'X-HTTP-Method-Override']
 
 
+# DRF config
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'user_service.exceptions.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -83,6 +89,8 @@ REST_FRAMEWORK = {
     )
 }
 
+
+# JWT config
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -109,7 +117,9 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
+
 ROOT_URLCONF = 'user_service.urls'
+
 
 TEMPLATES = [
     {
@@ -126,6 +136,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'user_service.wsgi.application'
 
@@ -150,7 +161,8 @@ DATABASES = {
     }
 }
 
-# Eureka moved to sidecar
+
+# Eureka config - moved to sidecar
 EUREKA = {
     'HOST': 'http://eureka:8081/eureka/',
     'DOCKER_PORT': os.environ.get('DOCKER_PORT', '8000'),
@@ -195,7 +207,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+# Email backend settings
 # mail - sili20.test@gmail.com/sili123asd
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # testing
 
