@@ -69,7 +69,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # Middleware for CORS
-    'user_service.middleware.cross_origin_middleware',
+    # 'user_service.middleware.cross_origin_middleware',
 ]
 
 
