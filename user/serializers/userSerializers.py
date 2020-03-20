@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.password_validation import validate_password
+from rest_framework import exceptions
 
 from group.serializers import GroupSerializer
 from user.models import User
 from group.models import Group
+from user_service.exceptions import ValidationError, validation_errors_map
 
 
 class CreateUserSerializer(serializers.Serializer):
@@ -26,6 +28,19 @@ class CreateUserSerializer(serializers.Serializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
+    def is_valid(self, raise_exception=False):
+        try:
+            r = super().is_valid(raise_exception)
+        except exceptions.ValidationError as e:
+            errors = []
+            for k, v in e.detail.items():
+                # error = validation_errors_map[k]
+                error = validation_errors_map.get(k, None)  # can be 'non_field_errors' ex. when unique_together
+                if error is None:
+                    raise ValidationError()
+                errors.append(ValidationError(*error))
+            raise ValidationError(error_code=errors)
+        return r
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     """
@@ -41,6 +56,20 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         read_only_fields = ['is_staff', 'date_joined', 'last_login', 'is_superuser', 'licence_id', 'username', 'id',
                             'groups']
         # extra_kwargs = {'password': {'write_only': True, 'required': False}}
+
+        def is_valid(self, raise_exception=False):
+            try:
+                r = super().is_valid(raise_exception)
+            except exceptions.ValidationError as e:
+                errors = []
+                for k, v in e.detail.items():
+                    # error = validation_errors_map[k]
+                    error = validation_errors_map.get(k, None)  # can be 'non_field_errors' ex. when unique_together
+                    if error is None:
+                        raise ValidationError()
+                    errors.append(ValidationError(*error))
+                raise ValidationError(error_code=errors)
+            return r
 
     def update(self, instance, validated_data):
         updating_user = validated_data.get('updating_user', None)
@@ -95,6 +124,8 @@ class UserSetPasswordSerializer(serializers.ModelSerializer):
             if validated_data.get('old_password', False):
                 if instance.check_password(validated_data['old_password']):
                     instance.set_password(validated_data['password'])
+                else:
+                    raise ValidationError(*validation_errors_map['old_password'])
 
         instance.save()
         return instance
@@ -114,6 +145,7 @@ class UserSetGroupSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # TODO: fix this serializer and use it when setting user's permissions
+        # TODO: add custom error messages
         groups_data = validated_data.get('groups', [])
         print(groups_data)
         if not groups_data:

@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework import exceptions
 from group.models import Group
+from user_service.exceptions import validation_errors_map, ValidationError
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -21,3 +23,17 @@ class GroupSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+    def is_valid(self, raise_exception=False):
+        try:
+            r = super().is_valid(raise_exception)
+        except exceptions.ValidationError as e:
+            errors = []
+            for k, v in e.detail.items():
+                # error = validation_errors_map[k]
+                error = validation_errors_map.get(k, None)  # can be 'non_field_errors' ex. when unique_together
+                if error is None:
+                    raise ValidationError()
+                errors.append(ValidationError(*error))
+            raise ValidationError(error_code=errors)
+        return r

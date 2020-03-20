@@ -85,4 +85,4 @@ class TestTokenRefresh(TestCase):
             reverse('user-token-refresh')
         )
 
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.status_code, status.HTTP_401_UNAUTHORIZED)

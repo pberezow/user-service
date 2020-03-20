@@ -4,10 +4,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_302_FOUND, \
     HTTP_204_NO_CONTENT, HTTP_201_CREATED
+from rest_framework import exceptions
 from rest_framework_simplejwt.exceptions import TokenError
 
 from user_service.permissions import CustomIsAuthenticated as IsAuthenticated
-from user_service.exceptions import InvalidJWT
+from user_service.exceptions import InvalidJWT, InvalidCredentials
 from user.serializers import CustomTokenSerializer, CustomTokenRefreshSerializer
 
 
@@ -19,9 +20,11 @@ class CustomTokenView(TokenObtainSlidingView):
 
         try:
             serializer.is_valid(raise_exception=True)
+        except exceptions.ValidationError as e:
+            raise InvalidCredentials()
         except TokenError as e:
             # raise InvalidToken(e.args[0])
-            raise InvalidJWT()
+            raise InvalidCredentials()
 
         resp = Response(serializer.validated_data, status=status.HTTP_200_OK)
         resp.set_cookie('token', resp.data['token'])
@@ -36,6 +39,8 @@ class CustomTokenRefreshView(TokenRefreshSlidingView):
 
         try:
             serializer.is_valid(raise_exception=True)
+        except exceptions.ValidationError as e:
+            raise InvalidJWT()
         except TokenError as e:
             # raise InvalidToken(e.args[0])
             raise InvalidJWT()

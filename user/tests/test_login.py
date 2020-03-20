@@ -68,6 +68,6 @@ class TestLogin(TestCase):
             content_type='application/json'
         )
 
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertNotIn('token', response.data)
         self.assertNotIn('token', response.cookies)
