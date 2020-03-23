@@ -73,7 +73,7 @@ class ValidateResetTokenView(CreateAPIView):
 
 
 class ResetPasswordView(CreateAPIView):
-    permission_classes = []
+    permission_classes = [AllowAny]
     serializer_class = ResetPasswordSerializer
 
     def create(self, request, *args, **kwargs):
