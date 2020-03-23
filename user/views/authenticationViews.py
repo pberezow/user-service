@@ -6,6 +6,7 @@ from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST, HTTP
     HTTP_204_NO_CONTENT, HTTP_201_CREATED
 from rest_framework import exceptions
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework.permissions import AllowAny
 
 from user_service.permissions import CustomIsAuthenticated as IsAuthenticated
 from user_service.exceptions import InvalidJWT, InvalidCredentials
@@ -54,7 +55,7 @@ class LogoutView(RetrieveAPIView):  # GET
     """
     Logout - remove token cookie
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def retrieve(self, request, *args, **kwargs):
         resp = Response()

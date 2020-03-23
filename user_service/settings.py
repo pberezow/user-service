@@ -74,7 +74,7 @@ MIDDLEWARE = [
 
 
 # Config for cross_origin_middleware
-ACCESS_CONTROL_ALLOW_ORIGIN = '*'
+ACCESS_CONTROL_ALLOW_ORIGIN = None  # Set header's value to request's Origin header value
 ACCESS_CONTROL_ALLOW_HEADERS = ['Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'X-HTTP-Method-Override']
 
 

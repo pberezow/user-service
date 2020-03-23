@@ -23,7 +23,7 @@ def cross_origin_middleware(get_response):
 
     if isinstance(headers, list) or isinstance(headers, set):
         try:
-            ','.join(headers)
+            headers = ','.join(headers)
         except Exception as e:
             headers = DEFAULT_ACCESS_CONTROL_ALLOW_HEADERS
 
