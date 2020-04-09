@@ -1,7 +1,7 @@
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_302_FOUND, \
-    HTTP_204_NO_CONTENT, HTTP_201_CREATED
+    HTTP_204_NO_CONTENT, HTTP_201_CREATED, HTTP_200_OK
 
 from user.models import User
 from user.serializers import UserDetailsSerializer
@@ -31,7 +31,7 @@ class UserDetailsView(RetrieveUpdateDestroyAPIView):  # GET, PUT, DELETE
         serializer = self.get_serializer_class()
         user_to = serializer(user)
 
-        return Response(user_to.data, status=HTTP_302_FOUND)
+        return Response(user_to.data)
 
     def update(self, request, *args, **kwargs):
         user_id = self.kwargs['user_id']

@@ -23,7 +23,6 @@ class GroupListCreateView(ListCreateAPIView):
 
         serializer = self.get_serializer_class()
         groups_to = serializer(groups, many=True)
-
         return Response(groups_to.data)
 
     def create(self, request, *args, **kwargs):
@@ -41,7 +40,7 @@ class GroupListCreateView(ListCreateAPIView):
         except IntegrityError as e:
             raise GroupAlreadyExists()
 
-        return Response(group.validated_data, status=HTTP_201_CREATED)
+        return Response(group.validated_data)
 
 
 class GroupDetailsView(RetrieveUpdateDestroyAPIView):

@@ -1,0 +1,337 @@
+openapi: 3.0.0
+info:
+    title: Sili - User service API
+    description: API specification for User service in Sili app
+    version: 0.1.0
+
+# servers:
+    # - url: localhost:8000
+    # description: develop
+
+paths:
+    # AUTH related
+    /api/v1/users/login/:
+        post:
+            tags:
+              - authentication
+            summary: Login
+
+    /api/v1/users/token/refresh/:
+        post:
+            tags:
+              - authentication
+            summary: Refresh access token
+
+    /api/v1/users/logout/:
+        get: # swap to post???
+            tags:
+              - authentication
+            summary: Logout
+
+    
+        # USERS
+    /api/v1/users/:
+        get:
+            tags:
+              - users
+            summary: List all users assigned to user's licence
+    
+    /api/v1/users/register/:
+        post:
+            tags:
+              - users
+            summary: Create new user
+
+    /api/v1/users/reset/:
+        post:
+            tags:
+              - users
+            summary: Reset password - create token and send by mail
+
+    /api/v1/users/reset/token/:
+        post:
+            tags:
+              - users
+            summary: Reset password - set password
+
+    /api/v1/users/validate/:
+        post:
+            tags:
+              - users
+            summary: Validate reset password token
+
+    /api/v1/users/{userId}/:
+        parameters:
+            - in: path
+              name: userId
+              schema:
+                type: integer
+              required: true
+              description: ID of the user
+        get:
+            tags:
+              - users
+            summary: Get detailed data about user with specified ID 
+        put:
+            tags:
+              - users
+            summary: Edit user's data
+        delete:
+            tags:
+              - users
+            summary: Remove user (set is_active -> false)
+
+    /api/v1/users/{userId}/password/:
+        parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        put:
+            tags:
+              - users
+            summary: Change password
+
+    /api/v1/users/{userId}/permissions/:
+        parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        put:
+            tags:
+              - users
+            summary: Change user's groups
+
+    /api/v1/users/{userId}/avatar/:
+        parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        put:
+            tags:
+              - users
+            summary: Set user's avatar - NOT IMPLEMENTED
+
+    # GROUPS
+    /api/vi/users/permissions/:
+        get:
+            tags:
+              - groups
+            summary: List all groups assigned to user's licence
+        post:
+            tags:
+              - groups
+            summary: Create new group
+
+    /api/vi/users/permissions/{groupName}/:
+        parameters:
+        - in: path
+          name: groupName
+          schema:
+            type: string
+          required: true
+          description: Name of the group
+        get:
+            tags:
+              - groups
+            summary: Get detailed info about group with specified groupName
+        put:
+            tags:
+              - groups
+            summary: Edit group's data
+        delete:
+            tags:
+              - groups
+            summary: Remove group
+
+    # Healthcheck
+    /api/v1/users/health/:
+        get:
+            tags:
+              - other
+            summary: Healthcheck used by other services
+
+
+        # get:
+        #     summary: Returns list of users.
+        #     responses:
+        #         '200':
+        #             description: JSON array of users
+        #             content: 
+        #                 application/json:
+        #                     schema:
+        #                         type: array
+        #                         items:
+        #                             type: string
+
+
+
+components:
+
+    schemas:
+        UserList:
+            properties:
+                first_name:
+                    type: string
+                last_name:
+                    type: string
+                email:
+                    type: string
+                phone_number:
+                    type: string
+                position:
+                    type: string
+
+        UserDetails:
+            properties:
+                id:
+                    type: int
+                licence_id:
+                    type: int
+                username:
+                    type: string
+                first_name:
+                    type: string
+                last_name:
+                    type: string
+                email:
+                    type: string
+                is_admin:
+                    type: bool
+                is_active:
+                    type: bool
+                phone_number:
+                    type: string
+                address:
+                    type: string
+                position:
+                    type: string
+                groups:
+                    type: $ref(Group)'
+
+        Group:
+            properties:
+                id:
+                    type: int
+                name:
+                    type: string
+
+        CreateUserPayload:
+            properties:
+                username:
+                    type: string
+                    required: true
+                password:
+                    type: string
+                    required: true
+                is_admin:
+                    type: bool
+                    default: false
+                first_name:
+                    type: string
+                last_name:
+                    type: string
+                email:
+                    type: string
+                    required: true
+                phone_number:
+                    type: string
+                address:
+                    type: string
+                position:
+                    type: string
+
+        EditUserPayload:
+            properties:
+                is_admin:
+                    type: bool
+                    default: /* old value */
+                    requires_admin_rights: true
+                first_name:
+                    type: string
+                    default: /* old value */
+                    requires_admin_rights: true
+                last_name:
+                    type: string
+                    default: /* old value */
+                    requires_admin_rights: true
+                email:
+                    type: string
+                    default: /* old value */
+                    requires_admin_rights: true
+                address:
+                    type: string
+                    default: /* old value */
+                    requires_admin_rights: true
+                position:
+                    type: string
+                    default: /* old value */
+                    requires_admin_rights: true
+                is_active:
+                    type: bool
+                    default: /* old value */
+                    requires_admin_rights: true
+                phone_number:
+                    type: string
+                    default: /* old value */
+        
+        LoginPayload:
+            properties:
+                username:
+                    type: string
+                    required: true
+                password:
+                    type: string
+                    required: true
+                    
+        SetPasswordPayload:
+            properties:
+                password:
+                    type: string
+                    required: true
+                old_password:
+                    type: string
+                    required: true
+                                    
+        ResetPasswordPayload:
+            properties:
+                email:
+                    type: string
+                    required: true
+
+        NewPasswordPayload:
+            properties:
+                token:
+                    type: string
+                    required: true
+                password:
+                    type: string
+                    required: true
+
+        SetUserGroupsPayload:
+            properties:
+                groups:
+                    type: list
+                    properties:
+                        name:
+                            type: string
+                    required: true
+
+        CreateEditGroupPayload:
+            properties:
+                name:
+                    type: string
+                    required: true
+        
+        AuthToken:
+            properties:
+                token:
+                    type: string
