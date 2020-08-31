@@ -39,6 +39,7 @@ AUTH_USER_MODEL = 'user.User'
 ADMINS_DATA = [
     ('pberezow', 'admin123', 'pitusx357@gmail.com'),
     ('wzaniewski', 'admin123', 'zaniewski.wojciech97@gmail.com'),
+    ('swrobel', 'admin123', 'szywro5@gmail.com'),
 ]
 
 
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',  # Django Rest Framework
+    'drf_yasg',  # swagger generator
 
     'group',
     'user',
@@ -69,7 +71,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # Middleware for CORS
-    # 'user_service.middleware.cross_origin_middleware',
+    'user_service.middleware.cross_origin_middleware',
 ]
 
 
@@ -209,6 +211,7 @@ STATIC_URL = '/static/'
 
 
 # Email backend settings
+# TODO - move to env
 # mail - sili20.test@gmail.com/sili123asd
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
