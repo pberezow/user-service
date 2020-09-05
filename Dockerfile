@@ -6,13 +6,13 @@ COPY . .
 
 RUN pip3 install -r requirements.txt
 
-FROM sili/jre_base:latest
-WORKDIR /sidecar
+#FROM sili/jre_base:latest
+#WORKDIR /sidecar
 ARG JAR_FILE=target/*.jar
 COPY --from=py / /
 COPY --from=py /app /app
 
-COPY ${JAR_FILE} ./app.jar
+#COPY ${JAR_FILE} ./app.jar
 
 WORKDIR /app
 
