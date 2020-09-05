@@ -14,6 +14,6 @@ python manage.py initadmin
 
 set -m
 gunicorn user_service.wsgi &
-/opt/java/openjdk/bin/java -jar /sidecar/app.jar
+/opt/openjdk-15/bin/java -jar /sidecar/app.jar
 fg %1
 
