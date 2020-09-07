@@ -8,5 +8,6 @@ class IsAdminPermissionHook:
 
     def __call__(self, req: Request, resp: Response, resource, params):
         if req.context.get('user', None) and not req.context.user.is_admin:
+            req.context.is_admin = False
             raise falcon.HTTPUnauthorized()
         req.context.is_admin = True

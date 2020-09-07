@@ -8,5 +8,6 @@ class IsSelfPermissionHook:
 
     def __call__(self, req: Request, resp: Response, resource, params):
         if req.context.get('user', None) and not req.context.user.username == params[self._param_name]:
+            req.context.is_self = False
             raise falcon.HTTPUnauthorized()
         req.context.is_self = True
