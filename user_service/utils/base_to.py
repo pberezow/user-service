@@ -14,7 +14,7 @@ class BaseTO(ABC):
     @abstractmethod
     def as_dict(self) -> Dict[str, Any]:
         """
-        Returns Dict with all attributes
+        Returns Dict with all attributes.
         """
         pass
 

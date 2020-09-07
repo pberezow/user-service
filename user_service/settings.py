@@ -3,6 +3,7 @@
 
 
 settings_dict = {
+    # key for JWT encoding and decoding (HS256 alg.)
     'jwt_secret': 'secret_UHYYGJHG876876&^*uydshiye897hyu',
     'admins': [
         {
@@ -13,6 +14,7 @@ settings_dict = {
             'is_admin': True
         }
     ],
+    # DB config
     'db': {
         'engine': 'postgres',
         'username': 'postgres',
@@ -21,6 +23,7 @@ settings_dict = {
         'port': 5432,
         'dbname': 'user_db'
     },
+    # Gunicorn config
     'gunicorn': {
         'reload': True,
         'loglevel': 'debug',

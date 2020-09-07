@@ -8,6 +8,9 @@ from user_service.utils.validators import (get_type_validator, email_validator, 
 
 
 class UserMapper(BaseMapper):
+    """
+    Basic User mapper with nested `groups` attribute. Used for user's input validation and mapping to UserTO obj.
+    """
     validators = {
         'id': [get_type_validator(int)],
         'licence_id': [get_type_validator(int)],

@@ -1,12 +1,15 @@
 from typing import List, Optional
 
-from user_service.models.user import UserTO
-from user_service.repository.user_repository import UserRepository
+from user_service.models import UserTO
+from user_service.repository import UserRepository
 from user_service.exceptions.database import DatabaseException, UserDoesNotExist
-from user_service.utils.password_utils import hash_password
+from user_service.utils import hash_password
 
 
 class UserCRUDService:
+    """
+    Service providing CRUD functionalities for User object.
+    """
     def __init__(self, user_repository: UserRepository):
         self._user_repository = user_repository
 

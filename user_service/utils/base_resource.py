@@ -2,7 +2,7 @@ import falcon
 from abc import ABC, abstractmethod
 from typing import Optional, Union, List, Dict, Any
 
-from user_service.utils.base_mapper import BaseMapper
+from user_service.utils import BaseMapper
 from user_service.exceptions.validation import InvalidAttributeValueException, MissingUserInput
 
 

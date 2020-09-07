@@ -1,6 +1,6 @@
 import falcon
 from falcon import Request, Response
-from typing import List, Callable, Any, Iterable
+from typing import Callable, Any, Iterable
 
 
 class OrPermissionsHook:
@@ -14,7 +14,7 @@ class OrPermissionsHook:
             try:
                 permission(req, resp, resource, params)
                 permitted = True
-            except falcon.HTTPUnauthorized as err:
+            except falcon.HTTPForbidden as err:
                 errors.append(err)
 
             if not permitted and errors:

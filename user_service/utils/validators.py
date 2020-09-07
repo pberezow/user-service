@@ -15,12 +15,12 @@ def get_str_len_validator(min_length: int = None, max_length: int = None):
     if min_length is None:
         def min_validator(val): return True
     else:
-        def min_validator(val): return len(val) > min_length
+        def min_validator(val): return len(val) >= min_length
 
     if max_length is None:
         def max_validator(val): return True
     else:
-        def max_validator(val): return len(val) < max_length
+        def max_validator(val): return len(val) <= max_length
 
     return lambda val: min_validator(val) and max_validator(val)
 

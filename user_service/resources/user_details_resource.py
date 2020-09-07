@@ -1,13 +1,20 @@
 import falcon
 from falcon import Response, Request
 
-from user_service.utils.base_resource import BaseResource
-from user_service.services.user_crud_service import UserCRUDService
+from user_service.utils import BaseResource
+from user_service.services import UserCRUDService
 from user_service.mappers import UserMapper
 from user_service.hooks import IsAdminPermissionHook, IsSelfPermissionHook, OrPermissionsHook
 
 
 class UserDetailsResource(BaseResource):
+    """
+    Provides user resource with actions on specific user. (distinguished by username)
+
+    on_get - returns details about user.
+    on_put - changes user's data.
+    on_delete - removes user (sets is_active = False)
+    """
     mapper = UserMapper(included_attributes={'username', 'email', 'is_admin', 'first_name', 'last_name', 'phone_number',
                                              'address', 'position', })
 

@@ -2,13 +2,16 @@ import falcon
 from falcon import Request, Response
 from datetime import datetime
 
-from user_service.utils.base_resource import BaseResource
-from user_service.mappers.user_mapper import UserMapper
-from user_service.services.user_crud_service import UserCRUDService
+from user_service.utils import BaseResource
+from user_service.mappers import UserMapper
+from user_service.services import UserCRUDService
 from user_service.hooks import IsAdminPermissionHook
 
 
 class UserListResource(BaseResource):
+    """
+    Provides user resource for operations on multiple users and creating user.
+    """
     mapper = UserMapper(included_attributes={'licence_id', 'username', 'password', 'is_admin', 'first_name',
                                              'last_name', 'email', 'phone_number', 'address', 'position', 'is_active',
                                              'date_joined', 'last_login'})

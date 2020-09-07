@@ -3,7 +3,7 @@ from typing import Dict, List, Set, Optional, Callable, Any, Union
 from abc import ABC
 
 from user_service.exceptions.validation import MissingValidators, InvalidAttributeValueException, MissingUserInput
-from user_service.utils.base_to import BaseTO
+from user_service.utils import BaseTO
 
 
 class BaseMapper(ABC):

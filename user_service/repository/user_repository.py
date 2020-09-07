@@ -1,9 +1,10 @@
 import psycopg2
 from typing import List, Optional
-from user_service.models.user import UserTO
-from user_service.models.group import GroupTO
+
+from user_service.models import UserTO
+from user_service.models import GroupTO
 from user_service.db import DBManager
-from user_service.exceptions.database import UserDoesNotExist, get_db_exception
+from user_service.repository import UserDoesNotExist, get_db_exception
 
 
 class UserRepository:
@@ -43,7 +44,8 @@ class UserRepository:
     def __init__(self, db: DBManager):
         self._db = db
 
-    def _map_record_to_user_to(self, id, password, last_login, username, first_name, last_name, email, is_active,
+    @staticmethod
+    def _map_record_to_user_to(id, password, last_login, username, first_name, last_name, email, is_active,
                                date_joined, licence_id, is_admin, phone_number, address, position) -> UserTO:
         """
         Used to map database record (users table) to UserTO.
@@ -79,7 +81,7 @@ class UserRepository:
     def get_user_by_username(self, username: str, licence_id: Optional[int], for_auth: bool = False) -> UserTO:
         """
         Get user from database. Set licence_id = None and for_auth = True for querying only with username.
-        Return transport object for user with corresponding username and licence_id or raise UserDoesNotExist exception
+        Return transport object for user with corresponding username and licence_id or raise UserDoesNotExist exception.
         """
         with self._db.session() as cur:
             if for_auth:

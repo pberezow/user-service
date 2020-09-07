@@ -1,12 +1,15 @@
 from datetime import datetime
 
-from user_service.models.user import UserTO
-from user_service.utils.base_mapper import BaseMapper
+from user_service.models import UserTO
+from user_service.utils import BaseMapper
 from user_service.utils.validators import (get_type_validator, email_validator, phone_number_validator,
                                            get_str_len_validator)
 
 
 class FlatUserMapper(BaseMapper):
+    """
+    User mapper without nested `groups` attribute.
+    """
     validators = {
         'id': [get_type_validator(int)],
         'licence_id': [get_type_validator(int)],

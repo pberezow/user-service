@@ -4,6 +4,10 @@ from user_service.services import JWTService
 
 
 class AuthHook:
+    """
+    Hook for user's Authorization. Authorization is done through JWT passed in `Authorization` header.
+        If authorization fails, then falcon.HTTPUnauthorized is raised.
+    """
     def __init__(self, jwt_service: JWTService):
         self._jwt_service = jwt_service
 

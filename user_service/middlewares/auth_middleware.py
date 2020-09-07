@@ -1,11 +1,16 @@
 import falcon
 from falcon import Request, Response
 from typing import Optional, Set
+
 from user_service.services.jwt_service import JWTService
 
 
 class AuthMiddleware:
-
+    """
+    Middleware for user's Authorization. Authorization is done through JWT passed in `Authorization` header.
+        If authorization fails, then falcon.HTTPUnauthorized is raised, otherwise user transport object with
+        provided payload is set in req.context.user.
+    """
     def __init__(self, jwt_service: JWTService, allowed_paths: Optional[Set[str]] = None):
         self._jwt_service = jwt_service
         self._allowed_paths = allowed_paths or set()

@@ -1,5 +1,4 @@
 from typing import Optional
-from psycopg2.extensions import Diagnostics
 from psycopg2 import Error
 
 
