@@ -3,7 +3,7 @@ from falcon import Request, Response
 
 from user_service.services.auth_service import AuthService
 from user_service.services.jwt_service import JWTService
-from user_service.services.user_mapper import UserMapper
+from user_service.mappers.user_mapper import UserMapper
 from user_service.utils.base_resource import BaseResource
 
 

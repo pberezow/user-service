@@ -3,8 +3,8 @@ from falcon import Response, Request
 
 from user_service.utils.base_resource import BaseResource
 from user_service.services.user_crud_service import UserCRUDService
-from user_service.services.user_mapper import UserMapper
-from user_service.hooks import IsAdminPermissionHook, IsSelfPermissionHook
+from user_service.mappers import UserMapper
+from user_service.hooks import IsAdminPermissionHook, IsSelfPermissionHook, OrPermissionsHook
 
 
 class UserDetailsResource(BaseResource):
@@ -26,7 +26,7 @@ class UserDetailsResource(BaseResource):
         resp.status = falcon.HTTP_200
         resp.media = user_to.as_json()
 
-    @falcon.before(IsSelfPermissionHook(param_name='username'))
+    @falcon.before(OrPermissionsHook([IsSelfPermissionHook(param_name='username'), IsAdminPermissionHook()]))
     def on_put(self, req: Request, resp: Response, username: str):
         """Edit user data."""
         resp.status = falcon.HTTP_200
