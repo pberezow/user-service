@@ -1,3 +1,2 @@
 from .user_repository import UserRepository
-from .exceptions import (InvalidAttributeValue, DatabaseException, GroupDoesNotExist, UserDoesNotExist,
-                         UserAlreadyInGroup)
+from user_service.exceptions.database import UserDoesNotExist, DatabaseException, get_db_exception
