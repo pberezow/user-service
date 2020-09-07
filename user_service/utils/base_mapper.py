@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Dict, List, Set, Optional, Callable, Any, Union
 from abc import ABC
 
@@ -96,7 +97,7 @@ class BaseMapper(ABC):
             raise InvalidAttributeValueException('users_input', users_input, type(self))
         return True
 
-    def _validate(self, input_dict: Dict[str, Any], subset_of_attributes: Optional[Set[str]] = None):
+    def _validate(self, input_dict: Dict[str, Any]):
         # TODO - check if there is no extra items in input_dict?
 
         for attribute in self._included_attributes:
@@ -122,7 +123,8 @@ class BaseMapper(ABC):
             self._validate_attribute(attribute, value)
         return True
 
-    def map_to_transport_object(self, users_input: Union[List, Dict[str, Any]], skip_validation: bool = False) -> Union[BaseTO, List[BaseTO]]:
+    def map_to_transport_object(self, users_input: Union[List, Dict[str, Any]],
+                                skip_validation: bool = False) -> Union[BaseTO, List[BaseTO]]:
         """
         Validates and maps input ('users_input') into transport object(s) ('self.to_class')
         If skip_validation == True, then only maps input to transport object(s).
