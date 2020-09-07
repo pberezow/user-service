@@ -3,12 +3,23 @@
 
 
 settings_dict = {
+    'jwt_secret': 'secret_UHYYGJHG876876&^*uydshiye897hyu',
+    'admins': [
+        {
+            'username': 'pitusx357',
+            'password': 'admin123',
+            'email': 'pitusx357@gmail.com',
+            'licence_id': 0,
+            'is_admin': True
+        }
+    ],
     'db': {
-        'drivername': 'postgres',
-        'username': 'user123',
-        'password': 'user123',
+        'engine': 'postgres',
+        'username': 'postgres',
+        'password': 'postgres',
         'host': 'localhost',
-        'port': 5432
+        'port': 5432,
+        'dbname': 'user_db'
     },
     'gunicorn': {
         'reload': True,
