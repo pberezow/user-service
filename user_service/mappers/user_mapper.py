@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from user_service.utils.base_mapper import BaseMapper
-from user_service.services.group_mapper import GroupMapper
+from user_service.mappers.flat_group_mapper import FlatGroupMapper
 from user_service.models.user import UserTO
+from user_service.utils.base_mapper import BaseMapper
 from user_service.utils.validators import (get_type_validator, email_validator, phone_number_validator,
                                            get_str_len_validator)
 
@@ -24,6 +24,6 @@ class UserMapper(BaseMapper):
         'last_login': [get_type_validator(datetime, type(None))],
         'date_joined': [get_type_validator(datetime)],
         'is_active': [get_type_validator(bool)],
-        'groups': GroupMapper()
+        'groups': FlatGroupMapper()
     }
     to_class = UserTO
