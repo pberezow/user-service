@@ -1,12 +1,14 @@
 from typing import Dict, Tuple, Any
+from user_service.utils import BaseTO
 
 
-class GroupTO:
+class GroupTO(BaseTO):
     def __init__(self, id, licence_id, name, users=None):
         self.id = id
         self.licence_id = licence_id
         self.name = name
         self.users = users or []
+        super().__init__()
 
     def add_user(self, user_to):
         self.users.append(user_to)
