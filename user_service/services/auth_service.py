@@ -2,7 +2,7 @@ import bcrypt
 from typing import List, Dict, Optional, Any
 from user_service.models.user import UserTO
 from user_service.repository.user_repository import UserRepository
-from user_service.repository.exceptions import DatabaseException, UserDoesNotExist
+from user_service.exceptions.database import DatabaseException, UserDoesNotExist
 from user_service.utils.password_utils import is_password_valid
 
 
