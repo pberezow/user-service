@@ -27,3 +27,13 @@ class AuthService:
             return user_to
         else:
             return None
+
+    def refresh_user_data(self, username: str) -> Optional[UserTO]:
+        """
+        Get actual user data from database. Used in refresh token endpoint.
+        Returns UserTO or None if there is no user with matching username.
+        """
+        try:
+            user_to = self._user_repository.get_user_by_username(username, licence_id=None, for_auth=True)
+        except UserDoesNotExist as err:
+            return None
