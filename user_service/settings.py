@@ -1,10 +1,18 @@
 # import os
 # import multiprocessing
+from datetime import timedelta
 
 
 settings_dict = {
-    # key for JWT encoding and decoding (HS256 alg.)
-    'jwt_secret': 'secret_UHYYGJHG876876&^*uydshiye897hyu',
+    # JWT config
+    'jwt': {
+        'private_key': 'secret_UHYYGJHG876876&^*uydshiye897hyu',
+        'public_key': None,
+        'algorithm': 'HS256',
+        'token_lifetime': timedelta(minutes=5),
+        'refresh_secret': '-HGAGkev2SlEqrHA77iRD6FCo-R30YInMg6RXURT0O8=',
+        'refresh_token_lifetime': timedelta(days=1)
+    },
     'admins': [
         {
             'username': 'pitusx357',

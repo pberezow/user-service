@@ -2,7 +2,6 @@ from typing import Dict, Any
 from datetime import datetime
 
 from user_service.utils import BaseTO
-from user_service.models import GroupTO
 
 
 class UserTO(BaseTO):
@@ -33,7 +32,7 @@ class UserTO(BaseTO):
     def __repr__(self):
         return f'User: {self.id}, {self.username}, {self.email} '
 
-    def add_group(self, group_to: GroupTO):
+    def add_group(self, group_to: BaseTO):
         """
         Adds group to user's transport object.
         """

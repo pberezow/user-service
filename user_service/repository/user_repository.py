@@ -4,7 +4,7 @@ from typing import List, Optional
 from user_service.models import UserTO
 from user_service.models import GroupTO
 from user_service.db import DBManager
-from user_service.repository import UserDoesNotExist, get_db_exception
+from user_service.exceptions.database import UserDoesNotExist, get_db_exception
 
 
 class UserRepository:

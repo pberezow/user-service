@@ -30,4 +30,7 @@ class LoginResource(BaseResource):
             raise falcon.HTTPUnauthorized()
 
         token = self._jwt_service.create_jwt(user)
+        refresh_token = self._jwt_service.create_refresh_token(token)
+
         resp.set_cookie('token', token)
+        resp.set_cookie('refresh_token', refresh_token)

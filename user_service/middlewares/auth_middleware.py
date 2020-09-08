@@ -19,11 +19,12 @@ class AuthMiddleware:
         if req.path in self._allowed_paths:
             return
 
-        token = req.get_header('Authorization')
-        if token is None:
+        token_header = req.get_header('Authorization')
+        if token_header is None or not token_header.startswith('Bearer '):
             # no token provided
             raise falcon.HTTPUnauthorized()
 
+        token = token_header[7:]
         user_to = self._jwt_service.get_user_from_jwt(token)
         if user_to is None:
             # invalid token

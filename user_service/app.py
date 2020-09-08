@@ -4,7 +4,7 @@ from user_service.repository.user_repository import UserRepository
 from user_service.services.user_crud_service import UserCRUDService
 from user_service.services.auth_service import AuthService
 from user_service.services.jwt_service import JWTService
-from user_service.resources import ExampleResource, UserDetailsResource, UserListResource, LoginResource, LogoutResource
+from user_service.resources import UserDetailsResource, UserListResource, LoginResource, LogoutResource
 from user_service.middlewares import AuthMiddleware
 from user_service.models.user import UserTO
 
@@ -28,13 +28,23 @@ class UserApplication(falcon.API):
         self.user_repository = UserRepository(self._db_manager)
 
     def _setup_services(self):
-        self.user_crud_service = UserCRUDService(self.user_repository)
-        self.jwt_service = JWTService(self.config['jwt_secret'])
-        self.auth_service = AuthService(self.user_repository, self.config['jwt_secret'])
-        pass
+        self.user_crud_service = UserCRUDService(
+            self.user_repository
+        )
+        jwt_cfg = self.config['jwt']
+        self.jwt_service = JWTService(
+            jwt_cfg['private_key'],
+            jwt_cfg['public_key'],
+            jwt_cfg['algorithm'],
+            jwt_cfg['token_lifetime'],
+            jwt_cfg['refresh_secret'],
+            jwt_cfg['refresh_token_lifetime']
+        )
+        self.auth_service = AuthService(
+            self.user_repository
+        )
 
     def _setup_routes(self):
-        self.add_route('/example', ExampleResource())
         self.add_route('/login', LoginResource(self.auth_service, self.jwt_service))
         self.add_route('/logout', LogoutResource())
         self.add_route('/', UserListResource(self.user_crud_service))
@@ -42,7 +52,7 @@ class UserApplication(falcon.API):
 
     def _setup_middleware(self):
         middleware = [
-            AuthMiddleware(self.jwt_service, {'/login', '/example'})
+            AuthMiddleware(self.jwt_service, {'/login'})
         ]
         return middleware
 

@@ -1,7 +1,6 @@
 from typing import Dict, Any
 
 from user_service.utils import BaseTO
-from user_service.models import UserTO
 
 
 class GroupTO(BaseTO):
@@ -16,7 +15,7 @@ class GroupTO(BaseTO):
         self.users = users or []
         super().__init__()
 
-    def add_user(self, user_to: UserTO):
+    def add_user(self, user_to: BaseTO):
         """
         Adds user to group transport object. `user_to` should be type of `UserTO`.
         """

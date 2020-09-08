@@ -10,9 +10,8 @@ class AuthService:
     """
     Service providing authorization functionalities.
     """
-    def __init__(self, user_repository: UserRepository, jwt_key: str):
+    def __init__(self, user_repository: UserRepository):
         self._user_repository = user_repository
-        self._jwt_key = jwt_key
 
     def authenticate_user(self, username: str, password: str) -> Optional[UserTO]:
         """
