@@ -54,7 +54,7 @@ class UserApplication(falcon.API):
 
     def _setup_middleware(self):
         middleware = [
-            AuthMiddleware(self.jwt_service, {'/login'})
+            AuthMiddleware(self.jwt_service, {'/login', '/refresh'})
         ]
         return middleware
 
