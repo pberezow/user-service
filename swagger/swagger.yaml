@@ -1,0 +1,338 @@
+swagger: '2.0'
+info:
+  description: >-
+    Sili user service.
+  version: 0.1.0
+  title: User Service
+host: meminder.swagger.io
+basePath: /users
+tags:
+  - name: user
+    description: Operations about users
+  - name: group
+    description: Operations about groups
+  - name: jwt
+    description: JWT and authorization-related operations
+schemes:
+  - https
+  - http
+paths:
+  '/login':
+    post:
+      tags:
+        - jwt
+      summary: Login user
+      description: Creates JWT and refresh token for user. Tokens are returned as cookies.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: User's credentials
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+            required:
+              - username
+              - password
+      responses:
+        200:
+          description: Login successful
+          schema:
+            $ref: '#/definitions/AuthObject'
+        400:
+          description: Bad request
+        401:
+          description: Login failed
+
+  '/refresh':
+    post:
+      tags:
+        - jwt
+      summary: Refresh session
+      description: Validates supplied refresh token and if valid creates new JWT and refresh token for it.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Refresh token
+          required: true
+          schema:
+            type: object
+            properties:
+              refresh_token:
+                type: string
+            required:
+              - refresh_token
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AuthObject'
+        400:
+          description: Bad request - refresh token invalid or expired
+        401:
+          description: Unauthorized - User is inactive or does not exist
+
+  '/':
+    get:
+      tags:
+      - user
+      summary: Get list of users
+      description: Returns list of users with assigned to same licence as authorized user.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: Creates new user for licence same as authorized user. Available only for users with admin privileges.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: User data
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              email:
+                type: string
+                format: email
+              is_admin:
+                type: boolean
+                default: false
+              first_name:
+                type: string
+                default: ''
+              last_name:
+                type: string
+                default: ''
+              phone_number:
+                type: string
+                default: ''
+              address:
+                type: string
+                default: ''
+              position:
+                type: string
+                default: ''
+            required:
+              - username
+              - password
+              - email
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/UserDetails'
+
+  '/{username}':
+    get:
+      tags:
+        - user
+      summary: Get user's details
+      description: Returns detailed data about user with provided username.
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: path
+        description: Username of user to get
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/UserDetails'
+        404:
+          description: Not found
+    put:
+      tags:
+        - user
+      summary: Edit user
+      description: Edit user's data, and return modified user.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: path
+        description: Username of modified user
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: User data, only provided fields will be edited.
+        required: true
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+            is_admin:
+              type: boolean
+            first_name:
+              type: string
+            last_name:
+              type: string
+            phone_number:
+              type: string
+            address:
+              type: string
+            position:
+              type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/UserDetails'
+        400:
+          description: Bad request
+        404:
+          description: Not found
+    delete:
+      tags:
+        - user
+      summary: Remove user
+      description: Removes user (sets as inactive) and returns user's object.
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: path
+        description: Username of user to delete
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/UserDetails'
+        404:
+          description: Not found
+
+
+definitions:
+
+  AuthObject:
+    type: object
+    properties:
+      token:
+        type: string
+        format: jwt
+      refresh_token:
+        type: string
+
+  User:
+    type: object
+    properties:
+      username:
+        type: string
+      email:
+        type: string
+        format: email
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+      position:
+        type: string
+
+  UserDetails:
+    type: object
+    properties:
+      id:
+        type: integer
+      licence_id:
+        type: integer
+      username:
+        type: string
+      email:
+        type: string
+        format: email
+      is_admin:
+        type: boolean
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+      address:
+        type: string
+      position:
+        type: string
+      last_login:
+        type: number
+        format: timestamp
+      date_joined:
+        type: number
+        format: timestamp
+      is_active:
+        type: boolean
+      groups:
+        type: array
+        items:
+          $ref: '#/definitions/Group'
+
+  Group:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+
+  GroupDetails:
+    type: object
+    properties:
+      id:
+        type: integer
+      licence_id:
+        type: integer
+      name:
+        type: string
+      users:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+
+securityDefinitions:
+  JWT:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: 'JWT authorization using Bearer scheme. Example:  "Authorization: Bearer {token}"'
+
+security:
+  - JWT: []

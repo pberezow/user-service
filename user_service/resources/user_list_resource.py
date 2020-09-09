@@ -11,6 +11,9 @@ from user_service.hooks import IsAdminPermissionHook
 class UserListResource(BaseResource):
     """
     Provides user resource for operations on multiple users and creating user.
+
+    on_get - returns list of users with same licence_id
+    on post - creates new user
     """
     mapper = UserMapper(included_attributes={'licence_id', 'username', 'password', 'is_admin', 'first_name',
                                              'last_name', 'email', 'phone_number', 'address', 'position', 'is_active',

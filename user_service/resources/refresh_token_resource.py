@@ -6,6 +6,11 @@ from user_service.services import JWTService, AuthService
 
 
 class RefreshTokenResource(BaseResource):
+    """
+    Provides resource for jwt session refresh.
+
+    on_post - gets refresh token, validates it and returns new JWT with new refresh_token
+    """
     def __init__(self, jwt_service: JWTService, auth_service: AuthService):
         self._jwt_service = jwt_service
         self._auth_service = auth_service
