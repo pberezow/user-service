@@ -80,3 +80,14 @@ class UserCRUDService:
 
     def set_users_avatar(self):
         pass
+
+    def set_password(self, username: str, raw_password: str) -> bool:
+        """
+        Set user's password. Returns True if success, otherwise False.
+        """
+        hashed_pwd = hash_password(raw_password)
+        try:
+            user_to = self._user_repository.set_users_password(username, hashed_pwd)
+            return True
+        except UserDoesNotExist as err:
+            return False

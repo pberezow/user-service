@@ -5,7 +5,7 @@ from user_service.services.user_crud_service import UserCRUDService
 from user_service.services.auth_service import AuthService
 from user_service.services.jwt_service import JWTService
 from user_service.resources import (UserDetailsResource, UserListResource, LoginResource, LogoutResource,
-                                    RefreshTokenResource)
+                                    RefreshTokenResource, SetPasswordResource)
 from user_service.middlewares import AuthMiddleware
 from user_service.models.user import UserTO
 
@@ -51,6 +51,7 @@ class UserApplication(falcon.API):
         self.add_route('/refresh', RefreshTokenResource(self.jwt_service, self.auth_service))
         self.add_route('/', UserListResource(self.user_crud_service))
         self.add_route('/{username}', UserDetailsResource(self.user_crud_service))
+        self.add_route('/{username}/password', SetPasswordResource(self.user_crud_service, self.auth_service))
 
     def _setup_middleware(self):
         middleware = [

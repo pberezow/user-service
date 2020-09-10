@@ -40,6 +40,9 @@ class UserRepository:
             JOIN users_groups ON users.id = users_groups.user_id 
             WHERE users.licence_id = %s AND users_groups.group_id = %s;
     """
+    SET_PASSWORD_QUERY = """
+        UPDATE users set password = %s WHERE username = %s RETURNING *;
+    """
 
     def __init__(self, db: DBManager):
         self._db = db
@@ -179,3 +182,21 @@ class UserRepository:
             res = cur.fetchall()
         users_to = list(map(lambda user: self._map_record_to_user_to(*user), res))
         return users_to
+
+    def set_users_password(self, username: str, password: str) -> UserTO:
+        """
+        Set password for user with matching username.
+        Returns UserTO or raises UserDoesNotExist.
+        """
+        with self._db.session() as cur:
+            try:
+                cur.execute(self.SET_PASSWORD_QUERY, (password, username))
+                self._db.commit()
+            except psycopg2.Error as err:
+                raise get_db_exception(err)
+            res = cur.fetchone()
+        if not res:
+            raise UserDoesNotExist()
+
+        user_to = self._map_record_to_user_to(*res)
+        return user_to
