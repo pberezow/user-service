@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Dict, List, Set, Optional, Callable, Any, Union
 from abc import ABC
+from collections.abc import Iterable
 
 from user_service.exceptions.validation import MissingValidators, InvalidAttributeValueException, MissingUserInput
 from user_service.utils.base_to import BaseTO
@@ -35,6 +36,13 @@ class BaseMapper(ABC):
                 raise ValueError(
                     f'{cls} - wrong type of `validators` attribute (expected dict, got {type(cls.validators)})'
                 )
+            else:
+                for attribute, validators in cls.validators.items():
+                    if not(isinstance(validators, Iterable) or isinstance(validators, BaseMapper)):
+                        raise ValueError(
+                            f'{cls} - wrong type of validator for {attribute}, '
+                            f'expected Iterable or subclass of BaseMapper, got {type(validators)}.'
+                        )
 
         if not hasattr(cls, 'to_class'):
             raise NotImplementedError(f'{cls} - required class attribute `to_class` is missing.')
@@ -117,7 +125,7 @@ class BaseMapper(ABC):
         for attribute in subset_of_attributes:
             try:
                 value = input_dict[attribute]
-            except KeyError as err:
+            except KeyError:
                 raise MissingUserInput(attribute, type(self))
 
             self._validate_attribute(attribute, value)
@@ -133,7 +141,8 @@ class BaseMapper(ABC):
         # Get attributes used in mapping
         if self._many and isinstance(users_input, list):
             if not skip_validation:
-                map(self._validate, users_input)
+                # list because of map's lazy initialization
+                list(map(self._validate, users_input))
             return list(map(self._map_to_transport_object, users_input))
         elif not self._many and isinstance(users_input, dict):
             if not skip_validation:
@@ -167,11 +176,12 @@ class BaseMapper(ABC):
         """
         if self._many and isinstance(users_input, list):
             if not skip_validation:
-                map(self._validate_subset, users_input)
+                # list because of map's lazy initialization
+                list(map(lambda dct: self._validate_subset(dct, subset_of_attributes), users_input))
             return list(map(lambda dct: self._map_partial_to_transport_object(dct, subset_of_attributes), users_input))
         elif not self._many and isinstance(users_input, dict):
             if not skip_validation:
-                self._validate(users_input)
+                self._validate_subset(users_input, subset_of_attributes)
             return self._map_partial_to_transport_object(users_input, subset_of_attributes)
         else:
             # Wrong type of users_input

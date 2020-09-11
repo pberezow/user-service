@@ -29,5 +29,5 @@ EMAIL_REGEX = re.compile(r'[\w\.-]+@([\w-]+\.)+[\w-]{2,4}')
 def email_validator(value): return EMAIL_REGEX.fullmatch(value) is not None
 
 
-PHONE_NUMBER_REGEX = re.compile(r'\+?[0-9]+]')
+PHONE_NUMBER_REGEX = re.compile(r'(\+[0-9]{1,3})?[0-9]{9,11}')
 def phone_number_validator(value): return PHONE_NUMBER_REGEX.fullmatch(value) is not None or not value
