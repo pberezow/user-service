@@ -52,7 +52,7 @@ paths:
         401:
           description: Login failed
 
-  '/refresh':
+  '/token/refresh':
     post:
       tags:
         - jwt
@@ -90,6 +90,8 @@ paths:
       - user
       summary: Get list of users
       description: Returns list of users with assigned to same licence as authorized user.
+      security:
+        - JWT: []
       produces:
         - application/json
       responses:
@@ -99,11 +101,15 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
+        403:
+          description: Forbidden - missinng JWT
     post:
       tags:
         - user
       summary: Create user
       description: Creates new user for licence same as authorized user. Available only for users with admin privileges.
+      security:
+        - JWT: []
       consumes:
         - application/json
       produces:
@@ -150,6 +156,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/UserDetails'
+        403:
+          description: Forbidden - missinng JWT or no admin rights
 
   '/{username}':
     get:
@@ -157,6 +165,8 @@ paths:
         - user
       summary: Get user's details
       description: Returns detailed data about user with provided username.
+      security:
+        - JWT: []
       produces:
         - application/json
       parameters:
@@ -172,11 +182,15 @@ paths:
             $ref: '#/definitions/UserDetails'
         404:
           description: Not found
+        403:
+          description: Forbidden - missinng JWT
     put:
       tags:
         - user
       summary: Edit user
       description: Edit user's data, and return modified user.
+      security:
+        - JWT: []
       consumes:
         - application/json
       produces:
@@ -218,11 +232,15 @@ paths:
           description: Bad request
         404:
           description: Not found
+        403:
+          description: Forbidden - missinng JWT or admin rights
     delete:
       tags:
         - user
       summary: Remove user
       description: Removes user (sets as inactive) and returns user's object.
+      security:
+        - JWT: []
       produces:
         - application/json
       parameters:
@@ -238,6 +256,128 @@ paths:
             $ref: '#/definitions/UserDetails'
         404:
           description: Not found
+        403:
+          description: Forbidden - missinng JWT or admin rights
+
+  '/{username}/password':
+    put:
+      tags:
+        - user
+      summary: Set password
+      description: Sets password for user with username matching `username` parameter.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: path
+        description: Username of user whose password will be changed
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: Old and new password
+        required: true
+        schema:
+          type: object
+          properties:
+            old_password:
+              type: string
+            password:
+              type: string
+      responses:
+        200:
+          description: OK
+        401:
+          description: Bad request
+        404:
+          description: Not found
+        403:
+          description: Forbidden - missinng JWT
+
+  '/{username}/permissions':
+    get:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+    put:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+
+  '/{username}/avatar':
+    put:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+
+  '/reset':
+    post:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+#    reset password [consumes username and reset token]
+
+  '/reset/token':
+    post:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+  #    creates reset password token
+
+  '/reset/token/validate/':
+    post:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+  #    validates reset password token ???
+
+  '/permissions':
+    get:
+      tags:
+        - group
+      responses:
+        200:
+          description: OK
+    post:
+      tags:
+        - group
+      responses:
+        200:
+          description: OK
+
+  '/permissions/{group_name}':
+    get:
+      tags:
+        - group
+      responses:
+        200:
+          description: OK
+    put:
+      tags:
+        - group
+      responses:
+        200:
+          description: OK
+    delete:
+      tags:
+        - group
+      responses:
+        200:
+          description: OK
 
 
 definitions:

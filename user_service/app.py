@@ -23,8 +23,8 @@ class UserApplication(falcon.API):
         self._create_admins()
 
     def _setup_db(self):
-        connection = DBManager.prepare_uri(**self.config['db'])
-        self._db_manager = DBManager(connection)
+        # connection = DBManager.prepare_uri(**self.config['db'])
+        self._db_manager = DBManager(db_config=self.config['db'])
         self._db_manager.setup()
         self.user_repository = UserRepository(self._db_manager)
 
