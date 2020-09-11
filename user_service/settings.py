@@ -168,6 +168,7 @@ DATABASES = {
 EUREKA = {
     'HOST': 'http://eureka:8081/eureka/',
     'DOCKER_PORT': os.environ.get('DOCKER_PORT', '8000'),
+    'CONTAINER_ID': os.environ.get('CONTAINER_ID', 'localhost')
 }
 
 
@@ -224,3 +225,25 @@ EMAIL_PORT = 465  # 587  # 465
 # EMAIL_USE_TLS = True
 EMAIL_USE_SSL = True
 EMAIL_TIMEOUT = None
+
+from time import sleep
+def ready():
+    from py_eureka_client import eureka_client
+    from user_service.settings import EUREKA
+
+    print(EUREKA['CONTAINER_ID'])
+    eureka_up = False
+    while not eureka_up:
+        try:
+            eureka_client.init(
+                eureka_server=EUREKA['HOST'],
+                app_name='user-service',
+                instance_port=int(EUREKA['DOCKER_PORT']),
+                instance_host=EUREKA['CONTAINER_ID']
+            )
+            eureka_up = True
+            print('Connected to eureka.')
+        except Exception as e:
+            print('Connecting to eureka...')
+            sleep(2.0)
+ready()
