@@ -2,7 +2,6 @@ import psycopg2
 from typing import List, Optional
 
 from user_service.models import UserTO
-from user_service.models import GroupTO
 from user_service.db import DBManager
 from user_service.exceptions.database import UserDoesNotExist, get_db_exception
 
@@ -35,10 +34,10 @@ class UserRepository:
     UPDATE_USER_BY_USERNAME_QUERY = """
         UPDATE users SET {} WHERE username = %s AND licence_id = %s RETURNING *;
     """
-    GET_USERS_FOR_GROUP_QUERY = """
+    GET_USERS_FOR_GROUP_ID_QUERY = """
         SELECT users.* FROM users 
             JOIN users_groups ON users.id = users_groups.user_id 
-            WHERE users.licence_id = %s AND users_groups.group_id = %s;
+            WHERE users_groups.group_id = %s;
     """
     SET_PASSWORD_QUERY = """
         UPDATE users set password = %s WHERE username = %s RETURNING *;
@@ -172,13 +171,13 @@ class UserRepository:
         users_to = list(map(lambda user: self._map_record_to_user_to(*user), res))
         return users_to
 
-    def get_users_for_group(self, group_to: GroupTO) -> List[UserTO]:
+    def get_users_for_group(self, group_id: int) -> List[UserTO]:
         """
         Get list of users assigned to some group (GroupTO) from database.
         Return list of transport object for users assigned to group.
         """
         with self._db.session() as cur:
-            cur.execute(self.GET_USERS_FOR_GROUP_QUERY, (group_to.licence_id, group_to.id))
+            cur.execute(self.GET_USERS_FOR_GROUP_ID_QUERY, (group_id,))
             res = cur.fetchall()
         users_to = list(map(lambda user: self._map_record_to_user_to(*user), res))
         return users_to
