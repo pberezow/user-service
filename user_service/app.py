@@ -6,13 +6,14 @@ from user_service.services.auth_service import AuthService
 from user_service.services.jwt_service import JWTService
 from user_service.resources import (UserDetailsResource, UserListResource, LoginResource, LogoutResource,
                                     RefreshTokenResource, SetPasswordResource)
-from user_service.middlewares import AuthMiddleware
+from user_service.middlewares import AuthMiddleware, RequestTimeMiddleware
 from user_service.models.user import UserTO
 
 
 class UserApplication(falcon.API):
-    def __init__(self, config, router=None, independent_middleware=True):
+    def __init__(self, config, router=None, independent_middleware=True, debug=False):
         self.config = config
+        self._debug = debug
 
         self._setup_db()
         self._setup_services()
@@ -23,7 +24,6 @@ class UserApplication(falcon.API):
         self._create_admins()
 
     def _setup_db(self):
-        # connection = DBManager.prepare_uri(**self.config['db'])
         self._db_manager = DBManager(db_config=self.config['db'])
         self._db_manager.setup()
         self.user_repository = UserRepository(self._db_manager)
@@ -57,6 +57,10 @@ class UserApplication(falcon.API):
         middleware = [
             AuthMiddleware(self.jwt_service, {'/login', '/refresh'})
         ]
+
+        if self._debug:
+            middleware = [RequestTimeMiddleware(), *middleware]
+
         return middleware
 
     def _create_admins(self):
