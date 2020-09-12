@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from user_service.models import UserTO
-from user_service.repository import UserRepository
+from user_service.repository import UserRepository, GroupRepository
 from user_service.exceptions.database import DatabaseException, UserDoesNotExist
 from user_service.utils import hash_password
 
@@ -10,8 +10,9 @@ class UserCRUDService:
     """
     Service providing CRUD functionalities for User object.
     """
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, group_repository: GroupRepository):
         self._user_repository = user_repository
+        self._group_repository = group_repository
 
     def create_user(self, user_to: UserTO) -> UserTO:
         """
@@ -43,6 +44,9 @@ class UserCRUDService:
         """
         try:
             user_to = self._user_repository.get_user_by_username(username, licence_id)
+            groups = self._group_repository.get_groups_for_user(user_to.id)
+            for group in groups:
+                user_to.add_group(group)
         except UserDoesNotExist as err:
             return None
 
