@@ -79,8 +79,31 @@ class UserCRUDService:
 
         return user_to
 
-    def set_user_groups(self):
-        pass
+    def set_user_groups(self, licence_id: int, username: str, groups_names: List[str]) -> Optional[UserTO]:
+        """
+        Assign user to list of groups
+        Returns TO or None if failed to set user groups.
+        """
+        try:
+            self._user_repository.remove_all_user_groups(username, licence_id)
+            groups_no = self._user_repository.insert_user_groups_by_group_name(username, licence_id, groups_names)
+        except DatabaseException as err:
+            return None
+
+        if groups_no == 0:
+            return None
+
+        user_to = UserTO(username=username, licence_id=licence_id)
+        try:
+            groups = self._group_repository.get_groups_for_user(username=username)
+            for group in groups:
+                user_to.add_group(group)
+        except DatabaseException as err:
+            # should never occur
+            # TODO - logging
+            pass
+
+        return user_to
 
     def set_users_avatar(self):
         pass

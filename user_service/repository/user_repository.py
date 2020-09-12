@@ -43,12 +43,12 @@ class UserRepository:
         UPDATE users set password = %s WHERE username = %s RETURNING *;
     """
     REMOVE_ALL_USER_GROUPS_QUERY = """
-        DELETE FROM users_groups WHERE user_id = %s RETURNING *;
+        DELETE FROM users_groups WHERE username = %s AND licence_id = %s RETURNING *;
     """
     INSERT_USER_GROUPS_BY_GROUP_NAME_QUERY = """
         INSERT INTO users_groups (user_id, group_id) SELECT users.id, groups.id FROM users
             JOIN groups ON users.licence_id = groups_licence_id 
-            WHERE users.username = %s, groups.name IN %s RETURNING *;
+            WHERE users.username = %s AND users.licence_id = %s AND groups.name IN %s RETURNING *;
     """
 
     def __init__(self, db: DBManager):
@@ -209,14 +209,14 @@ class UserRepository:
         user_to = self._map_record_to_user_to(*res)
         return user_to
 
-    def remove_all_user_groups(self, username: str) -> int:
+    def remove_all_user_groups(self, username: str, licence_id: int) -> int:
         """
         Remove user from all groups he belongs to.
         Returns number of removed assignments between user and group.
         """
         with self._db.session() as cur:
             try:
-                cur.execute(self.REMOVE_ALL_USER_GROUPS_QUERY, (username,))
+                cur.execute(self.REMOVE_ALL_USER_GROUPS_QUERY, (username, licence_id))
                 self._db.commit()
             except psycopg2.Error as err:
                 self._db.rollback()
@@ -224,14 +224,14 @@ class UserRepository:
             res = cur.fetchall()
         return len(res)
 
-    def insert_user_groups_by_group_name(self, username: str, groups_names: List[str]) -> int:
+    def insert_user_groups_by_group_name(self, username: str, licence_id: int, groups_names: List[str]) -> int:
         """
         Assign user to each group from list of passed group names.
         Returns number of groups user was assigned to.
         """
         with self._db.session() as cur:
             try:
-                cur.execute(self.INSERT_USER_GROUPS_BY_GROUP_NAME_QUERY, (username, groups_names))
+                cur.execute(self.INSERT_USER_GROUPS_BY_GROUP_NAME_QUERY, (username, licence_id, groups_names))
                 self._db.commit()
             except psycopg2.Error as err:
                 self._db.rollback()

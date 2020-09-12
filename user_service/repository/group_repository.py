@@ -1,5 +1,5 @@
 import psycopg2
-from typing import List
+from typing import List, Optional
 
 from user_service.models import GroupTO
 from user_service.db import DBManager
@@ -31,6 +31,12 @@ class GroupRepository:
         SELECT groups.* FROM groups 
             JOIN users_groups ON groups.id = users_groups.group_id 
             WHERE users_groups.user_id = %s;
+    """
+    GET_GROUPS_FOR_USERNAME_QUERY = """
+        SELECT groups.* FROM groups 
+            JOIN users_groups ON groups.id = users_groups.group_id
+            JOIN users ON users.id = users_groups.user_id 
+            WHERE users.username = %s;
     """
 
     def __init__(self, db: DBManager):
@@ -132,13 +138,19 @@ class GroupRepository:
         groups_to = list(map(lambda group: self._map_record_to_group_to(*group), res))
         return groups_to
 
-    def get_groups_for_user(self, user_id: int) -> List[GroupTO]:
+    def get_groups_for_user(self, user_id: Optional[int] = None, username: Optional[str] = None) -> List[GroupTO]:
         """
         Get list of groups user belongs to.
-        Return list of transport object for groups including user with id = `user_id`.
+        Return list of transport object for groups including user with id = `user_id` or username = `username`.
         """
+        if username is None and user_id is None:
+            raise ValueError(f'At least one parameter required in "get_groups_for_user" method of {type(self)}.')
+
         with self._db.session() as cur:
-            cur.execute(self.GET_GROUPS_FOR_USER_ID_QUERY, (user_id,))
+            if user_id:
+                cur.execute(self.GET_GROUPS_FOR_USER_ID_QUERY, (user_id,))
+            else:
+                cur.execute(self.GET_GROUPS_FOR_USERNAME_QUERY, (username,))
             res = cur.fetchall()
         groups_to = list(map(lambda group: self._map_record_to_group_to(*group), res))
         return groups_to
