@@ -4,3 +4,5 @@ from .login_resource import LoginResource
 from .logout_resource import LogoutResource
 from .refresh_token_resource import RefreshTokenResource
 from .set_password_resource import SetPasswordResource
+from .group_details_resource import GroupDetailsResource
+from .group_list_resource import GroupListResource

@@ -1,11 +1,10 @@
 import falcon
 from user_service.db import DBManager
-from user_service.repository.user_repository import UserRepository
-from user_service.services.user_crud_service import UserCRUDService
-from user_service.services.auth_service import AuthService
-from user_service.services.jwt_service import JWTService
+from user_service.repository import UserRepository, GroupRepository
+from user_service.services import UserCRUDService, AuthService, JWTService, GroupCRUDService
 from user_service.resources import (UserDetailsResource, UserListResource, LoginResource, LogoutResource,
-                                    RefreshTokenResource, SetPasswordResource)
+                                    RefreshTokenResource, SetPasswordResource, GroupDetailsResource,
+                                    GroupListResource)
 from user_service.middlewares import AuthMiddleware, RequestTimeMiddleware
 from user_service.models.user import UserTO
 
@@ -27,10 +26,12 @@ class UserApplication(falcon.API):
         self._db_manager = DBManager(db_config=self.config['db'])
         self._db_manager.setup()
         self.user_repository = UserRepository(self._db_manager)
+        self.group_repository = GroupRepository(self._db_manager)
 
     def _setup_services(self):
         self.user_crud_service = UserCRUDService(
-            self.user_repository
+            self.user_repository,
+            self.group_repository
         )
         jwt_cfg = self.config['jwt']
         self.jwt_service = JWTService(
@@ -44,14 +45,22 @@ class UserApplication(falcon.API):
         self.auth_service = AuthService(
             self.user_repository
         )
+        self.group_crud_service = GroupCRUDService(
+            self.group_repository,
+            self.user_repository
+        )
 
     def _setup_routes(self):
         self.add_route('/login', LoginResource(self.auth_service, self.jwt_service))
         self.add_route('/logout', LogoutResource())
         self.add_route('/refresh', RefreshTokenResource(self.jwt_service, self.auth_service))
+
         self.add_route('/', UserListResource(self.user_crud_service))
         self.add_route('/{username}', UserDetailsResource(self.user_crud_service))
         self.add_route('/{username}/password', SetPasswordResource(self.user_crud_service, self.auth_service))
+
+        self.add_route('/permissions', GroupListResource(self.group_crud_service))
+        self.add_route('/permissions/{group_name}', GroupDetailsResource(self.group_crud_service))
 
     def _setup_middleware(self):
         middleware = [
