@@ -17,7 +17,7 @@ class UserCRUDService:
     def create_user(self, user_to: UserTO) -> UserTO:
         """
         Creates new user.
-        Returns UserTO or None if does not exist in database.
+        Returns UserTO.
         """
         hashed_pwd = hash_password(user_to.password)
         user_to.password = hashed_pwd
