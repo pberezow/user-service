@@ -85,6 +85,7 @@ class UserCRUDService:
         Returns TO or None if failed to set user groups.
         """
         try:
+            # TODO - execute DELETE and INSERT in single transaction
             self._user_repository.remove_all_user_groups(username, licence_id)
             groups_no = self._user_repository.insert_user_groups_by_group_name(username, licence_id, groups_names)
         except DatabaseException as err:
