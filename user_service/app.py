@@ -4,7 +4,7 @@ from user_service.repository import UserRepository, GroupRepository
 from user_service.services import UserCRUDService, AuthService, JWTService, GroupCRUDService
 from user_service.resources import (UserDetailsResource, UserListResource, LoginResource, LogoutResource,
                                     RefreshTokenResource, SetPasswordResource, GroupDetailsResource,
-                                    GroupListResource)
+                                    GroupListResource, UserGroupsResource)
 from user_service.middlewares import AuthMiddleware, RequestTimeMiddleware
 from user_service.models.user import UserTO
 
@@ -58,6 +58,7 @@ class UserApplication(falcon.API):
         self.add_route('/', UserListResource(self.user_crud_service))
         self.add_route('/{username}', UserDetailsResource(self.user_crud_service))
         self.add_route('/{username}/password', SetPasswordResource(self.user_crud_service, self.auth_service))
+        self.add_route('/{username}/permissions', UserGroupsResource(self.user_crud_service))
 
         self.add_route('/permissions', GroupListResource(self.group_crud_service))
         self.add_route('/permissions/{group_name}', GroupDetailsResource(self.group_crud_service))

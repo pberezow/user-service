@@ -9,7 +9,7 @@ settings_dict = {
         'private_key': 'secret_UHYYGJHG876876&^*uydshiye897hyu',
         'public_key': None,
         'algorithm': 'HS256',
-        'token_lifetime': timedelta(minutes=5),
+        'token_lifetime': timedelta(minutes=60),
         'refresh_secret': '-HGAGkev2SlEqrHA77iRD6FCo-R30YInMg6RXURT0O8=',
         'refresh_token_lifetime': timedelta(days=1)
     },

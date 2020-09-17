@@ -17,6 +17,7 @@ class AuthMiddleware:
 
     def process_request(self, req: Request, resp: Response):
         if req.path in self._allowed_paths:
+            req.context.user = None
             return
 
         token_header = req.get_header('Authorization')

@@ -43,12 +43,13 @@ class UserRepository:
         UPDATE users set password = %s WHERE username = %s RETURNING *;
     """
     REMOVE_ALL_USER_GROUPS_QUERY = """
-        DELETE FROM users_groups WHERE username = %s AND licence_id = %s RETURNING *;
+        DELETE FROM users_groups 
+            WHERE user_id = (SELECT id FROM users WHERE username = %s AND licence_id = %s) RETURNING *;
     """
     INSERT_USER_GROUPS_BY_GROUP_NAME_QUERY = """
         INSERT INTO users_groups (user_id, group_id) SELECT users.id, groups.id FROM users
-            JOIN groups ON users.licence_id = groups_licence_id 
-            WHERE users.username = %s AND users.licence_id = %s AND groups.name IN %s RETURNING *;
+            JOIN groups ON users.licence_id = groups.licence_id 
+            WHERE users.username = %s AND users.licence_id = %s AND groups.name = ANY(%s) RETURNING *;
     """
 
     def __init__(self, db: DBManager):

@@ -89,9 +89,12 @@ class UserCRUDService:
             self._user_repository.remove_all_user_groups(username, licence_id)
             groups_no = self._user_repository.insert_user_groups_by_group_name(username, licence_id, groups_names)
         except DatabaseException as err:
+            print('DB error:')
+            err.print_diag()
             return None
 
         if groups_no == 0:
+            print('No groups found')
             return None
 
         user_to = UserTO(username=username, licence_id=licence_id)

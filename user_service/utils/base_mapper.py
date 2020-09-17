@@ -75,7 +75,7 @@ class BaseMapper(ABC):
                         self.validators[attribute] = mapper
                     else:
                         # TODO - add new exception for wrong nested mapper type
-                        raise MissingValidators(attribute, type(mapper), type(self))
+                        raise MissingValidators(attribute, type(mapper), type(self.validators[attribute]))
                 except KeyError as err:
                     raise MissingValidators(attribute, None, type(self)) from err
 
