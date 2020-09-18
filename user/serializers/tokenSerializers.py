@@ -18,6 +18,7 @@ def set_additional_payload(token, user):
     token['is_admin'] = user.is_admin
     token['position'] = user.position
     token['groups'] = [{'id': grp.id, 'name': grp.name} for grp in user.groups.all()]
+    token['iss'] = '1l0t1wIWqZ046DJ88DAqXTdY8lM0baV2AT6kzUw324rBeKh5x5npW8MMvooP'
     return token
 
 
