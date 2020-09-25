@@ -7,3 +7,6 @@ from .set_password_resource import SetPasswordResource
 from .group_details_resource import GroupDetailsResource
 from .group_list_resource import GroupListResource
 from .user_groups_resource import UserGroupsResource
+from .create_reset_token_resource import CreateResetTokenResource
+from .reset_password_resource import ResetPasswordResource
+from .validate_reset_token_resource import ValidateResetTokenResource
