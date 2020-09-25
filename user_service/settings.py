@@ -24,6 +24,7 @@ settings_dict = {
         }
     ],
     'db_init_script': './user_service/init_db.sql',
+    'reset_password_token_lifetime': timedelta(hours=3),
     # DB config
     'db': {
         'engine': 'postgres',
