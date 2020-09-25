@@ -37,6 +37,7 @@ class UserApplication(falcon.API):
         self.jwt_service = JWTService(
             jwt_cfg['private_key'],
             jwt_cfg['public_key'],
+            jwt_cfg['issuer'],
             jwt_cfg['algorithm'],
             jwt_cfg['token_lifetime'],
             jwt_cfg['refresh_secret'],
