@@ -31,3 +31,8 @@ def email_validator(value): return EMAIL_REGEX.fullmatch(value) is not None
 
 PHONE_NUMBER_REGEX = re.compile(r'(\+[0-9]{1,3})?[0-9]{9,11}')
 def phone_number_validator(value): return PHONE_NUMBER_REGEX.fullmatch(value) is not None or not value
+
+
+_password_type_validator = get_type_validator(str)
+_password_len_validator = get_str_len_validator(min_length=8, max_length=128)
+def password_validator(password): return _password_type_validator(password) and _password_len_validator(password)
