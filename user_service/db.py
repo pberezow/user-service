@@ -106,8 +106,36 @@ class DBManager:
     def rollback(self):
         self._db_connection.rollback()
 
+    def init_db(self) -> bool:
+        try:
+            self._drop_db(self._config['dbname'])
+        except self.DBConnectionError:
+            pass
+        except KeyError:
+            # has to be initialized with config object
+            return False
+        # will raise self.DBConnectionError if failed
+        self._create_db(self._config['dbname'])
+        return True
+
     def setup(self):
         pass
+
+    def create_tables(self, init_script: str):
+        with open(init_script, 'r') as file:
+            script = file.read()
+
+        lines = script.split('\n')
+        lines = [line for line in lines if not line.startswith('--') and line != '']
+        queries = filter(lambda q: q != '', '\n'.join(lines).split(';'))
+        with self.session() as cur:
+            for query in queries:
+                try:
+                    cur.execute(query)
+                except psycopg2.Error as err:
+                    self.rollback()
+                    raise err
+            self.commit()
 
     @staticmethod
     def prepare_uri(host: str, port: int, dbname: str, username: str = '', password: str = '',

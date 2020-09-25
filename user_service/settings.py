@@ -23,6 +23,7 @@ settings_dict = {
             'is_admin': True
         }
     ],
+    'db_init_script': './user_service/init_db.sql',
     # DB config
     'db': {
         'engine': 'postgres',

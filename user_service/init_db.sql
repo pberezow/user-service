@@ -47,3 +47,17 @@ CREATE TABLE users_groups
       REFERENCES users (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED
 );
+
+
+-- Table: reset_password_token
+--DROP TABLE reset_password_token;
+CREATE TABLE reset_password_token
+(
+  user_id integer NOT NULL,
+  token character varying(600) NOT NULL,
+  CONSTRAINT reset_password_token_pkey PRIMARY KEY (user_id),
+  CONSTRAINT users_id_fk_user_id FOREIGN KEY (user_id)
+      REFERENCES users (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED,
+  CONSTRAINT reset_password_token_token UNIQUE (token)
+);

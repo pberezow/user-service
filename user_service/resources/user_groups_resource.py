@@ -22,16 +22,13 @@ class UserGroupsResource(BaseResource):
     def on_put(self, req: Request, resp: Response, username: str):
         user = req.context.user
         data = req.media
-        print('Validating input...')
         user_to = self.map_with_error(data)
-        print(f'OK.\nSetting groups for {username}...')
 
         user_to = self._user_crud_service.set_user_groups(
             licence_id=user.licence_id,
             username=username,
             groups_names=[g.name for g in user_to.groups]
         )
-        print(f'Ok. {user_to}')
 
         if user_to is None:
             raise falcon.HTTPBadRequest()
