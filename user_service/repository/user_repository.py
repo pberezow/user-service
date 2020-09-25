@@ -25,6 +25,9 @@ class UserRepository:
     GET_USER_BY_USERNAME_QUERY = """
         SELECT * FROM users WHERE username = %s AND licence_id = %s;
     """
+    GET_USER_BY_EMAIL_QUERY = """
+            SELECT * FROM users WHERE email = %s;
+    """
     GET_USER_FOR_AUTHENTICATION_QUERY = """
         SELECT * FROM users WHERE username = %s;
     """
@@ -56,7 +59,7 @@ class UserRepository:
         self._db = db
 
     @staticmethod
-    def _map_record_to_user_to(id, password, last_login, username, first_name, last_name, email, is_active,
+    def map_record_to_user_to(id, password, last_login, username, first_name, last_name, email, is_active,
                                date_joined, licence_id, is_admin, phone_number, address, position) -> UserTO:
         """
         Used to map database record (users table) to UserTO.
@@ -86,7 +89,7 @@ class UserRepository:
                 self._db.rollback()
                 raise get_db_exception(err) from err
 
-        user_to = self._map_record_to_user_to(*res)
+        user_to = self.map_record_to_user_to(*res)
         return user_to
 
     def get_user_by_username(self, username: str, licence_id: Optional[int], for_auth: bool = False) -> UserTO:
@@ -104,7 +107,22 @@ class UserRepository:
             if not res:
                 raise UserDoesNotExist()
 
-            user_to = self._map_record_to_user_to(*res)
+            user_to = self.map_record_to_user_to(*res)
+
+        return user_to
+
+    def get_user_by_email(self, email: str) -> UserTO:
+        """
+        Get user from database.
+        Return transport object for user with corresponding email or raise UserDoesNotExist exception.
+        """
+        with self._db.session() as cur:
+            cur.execute(self.GET_USER_BY_EMAIL_QUERY, (email,))
+        res = cur.fetchone()
+        if not res:
+            raise UserDoesNotExist()
+
+        user_to = self.map_record_to_user_to(*res)
 
         return user_to
 
@@ -124,7 +142,7 @@ class UserRepository:
         if not res:
             raise UserDoesNotExist()
 
-        user_to = self._map_record_to_user_to(*res)
+        user_to = self.map_record_to_user_to(*res)
         return user_to
 
     def restore_user_by_username(self, username: str, licence_id: int) -> UserTO:
@@ -143,7 +161,7 @@ class UserRepository:
         if not res:
             raise UserDoesNotExist()
 
-        user_to = self._map_record_to_user_to(*res)
+        user_to = self.map_record_to_user_to(*res)
         return user_to
 
     def update_user_by_username(self, username: str, licence_id: int, **kwargs) -> UserTO:
@@ -165,7 +183,7 @@ class UserRepository:
         if not res:
             raise UserDoesNotExist()
 
-        user_to = self._map_record_to_user_to(*res)
+        user_to = self.map_record_to_user_to(*res)
         return user_to
 
     def get_users_by_licence_id(self, licence_id: int) -> List[UserTO]:
@@ -177,7 +195,7 @@ class UserRepository:
             cur.execute(self.GET_USERS_BY_LICENCE_ID_QUERY, (licence_id,))
             res = cur.fetchall()
         # map results into user transport objects
-        users_to = list(map(lambda user: self._map_record_to_user_to(*user), res))
+        users_to = list(map(lambda user: self.map_record_to_user_to(*user), res))
         return users_to
 
     def get_users_for_group(self, group_id: int) -> List[UserTO]:
@@ -188,7 +206,7 @@ class UserRepository:
         with self._db.session() as cur:
             cur.execute(self.GET_USERS_FOR_GROUP_ID_QUERY, (group_id,))
             res = cur.fetchall()
-        users_to = list(map(lambda user: self._map_record_to_user_to(*user), res))
+        users_to = list(map(lambda user: self.map_record_to_user_to(*user), res))
         return users_to
 
     def set_users_password(self, username: str, password: str) -> UserTO:
@@ -207,7 +225,7 @@ class UserRepository:
         if not res:
             raise UserDoesNotExist()
 
-        user_to = self._map_record_to_user_to(*res)
+        user_to = self.map_record_to_user_to(*res)
         return user_to
 
     def remove_all_user_groups(self, username: str, licence_id: int) -> int:

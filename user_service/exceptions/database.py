@@ -53,6 +53,11 @@ class GroupDoesNotExist(DatabaseException):
     pass
 
 
+class TokenDoesNotExist(DatabaseException):
+    """Raised when reset_password_token does not exist in database."""
+    pass
+
+
 class UserAlreadyInGroup(DatabaseException):
     """Raised when trying to assign user to group, which already includes him."""
     pass
