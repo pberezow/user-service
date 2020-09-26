@@ -78,7 +78,7 @@ class UserTO(BaseTO):
             'phone_number': self.phone_number,
             'address': self.address,
             'position': self.position,
-            'last_login': datetime.timestamp(self.last_login) if self.last_name else None,
+            'last_login': datetime.timestamp(self.last_login) if self.last_login else None,
             'date_joined': datetime.timestamp(self.date_joined) if self.date_joined else None,
             'is_active': self.is_active,
             'groups': [g.as_json() for g in self.groups]
