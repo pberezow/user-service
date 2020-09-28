@@ -13,26 +13,23 @@ from user_service.exceptions.database import DatabaseException
 
 
 class UserApplication(falcon.API):
-    def __init__(self, config, router=None, independent_middleware=True, debug=False):
+    def __init__(self, config, router=None, independent_middleware=True, debug=False, init_db=False):
         self.config = config
         self._debug = debug
 
-        self._setup_db(init_db=self._debug)
+        self._setup_db(init_db=init_db)
         self._setup_services()
 
         middleware = self._setup_middleware()
         super().__init__(middleware=middleware, router=router, independent_middleware=independent_middleware)
         self._setup_routes()
-        self._create_admins()
+
+        if init_db:
+            self._create_admins()
 
     def _setup_db(self, init_db=False):
-        self._db_manager = DBManager(db_config=self.config['db'])
-        if init_db:
-            print('Initializing db...')
-            success = self._db_manager.init_db()
-            if not success:
-                raise RuntimeError('Missing db config object in settings.')
-            self._db_manager.create_tables(self.config['db_init_script'])
+        self._db_manager = DBManager(db_config=self.config['db'], init_db=init_db,
+                                     init_script=self.config.get('db_init_script', None))
         self._db_manager.setup()
         self.user_repository = UserRepository(self._db_manager)
         self.group_repository = GroupRepository(self._db_manager)
