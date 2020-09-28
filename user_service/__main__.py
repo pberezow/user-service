@@ -7,7 +7,7 @@ from user_service.app import UserApplication
 def get_app():
     # config = Settings(**settings_dict)
     config = settings_dict
-    return UserApplication(config=config, debug=True)
+    return UserApplication(config=config, debug=True, init_db=True)
 
 
 class GunicornApplication(BaseApplication):

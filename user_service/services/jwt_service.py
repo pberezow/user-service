@@ -2,7 +2,7 @@ import jwt
 import os
 from typing import Optional, Union
 from datetime import timedelta, datetime
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken, InvalidSignature
 
 from user_service.models import UserTO
 
@@ -51,6 +51,7 @@ class JWTService:
             jwt_payload = jwt.decode(token, self._public_key, issuer=self._iss, algorithms=self._alg, options=options)
             # Remove 'exp' claim from payload
             del jwt_payload['exp']
+            del jwt_payload['iss']
             return UserTO(**jwt_payload)
         except Exception as err:
             print(err)
@@ -81,7 +82,11 @@ class JWTService:
         Validates refresh token and returns UserTO or None if validation fails.
         """
         refresh_token_as_bytes = refresh_token.encode()
-        token = self._refresh_token_enc_dec.decrypt(refresh_token_as_bytes)
+        try:
+            token = self._refresh_token_enc_dec.decrypt(refresh_token_as_bytes)
+        except (InvalidToken, InvalidSignature) as err:
+            # raise TokenError from err
+            return None
         payload = jwt.decode(token, verify=False)
         exp_claim = payload.get('exp', None)
         if exp_claim is None or datetime.fromtimestamp(exp_claim) < datetime.now() - self._refresh_token_lifetime:

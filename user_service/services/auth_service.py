@@ -35,5 +35,6 @@ class AuthService:
         """
         try:
             user_to = self._user_repository.get_user_by_username(username, licence_id=None, for_auth=True)
+            return user_to
         except UserDoesNotExist as err:
             return None
