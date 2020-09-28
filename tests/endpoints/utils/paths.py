@@ -1,0 +1,3 @@
+LOGIN_PATH = '/login'
+REFRESH_TOKEN_PATH = '/refresh'
+USERS_DETAILS_PATH = '/'
