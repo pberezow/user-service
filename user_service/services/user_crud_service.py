@@ -14,7 +14,7 @@ class UserCRUDService:
         self._user_repository = user_repository
         self._group_repository = group_repository
 
-    def create_user(self, user_to: UserTO) -> UserTO:
+    def create_user(self, user_to: UserTO) -> Optional[UserTO]:
         """
         Creates new user.
         Returns UserTO.
@@ -25,7 +25,7 @@ class UserCRUDService:
             user_to = self._user_repository.insert_user(user_to)
         except DatabaseException as err:
             # TODO - add falcon's errors
-            raise err
+            return None
 
         return user_to
 
@@ -55,13 +55,16 @@ class UserCRUDService:
     def set_user_data(self):
         pass
 
-    def remove_user(self, licence_id: int, username: str) -> Optional[UserTO]:
+    def remove_user(self, licence_id: int, username: str, hard_delete: Optional[bool] = False) -> Optional[UserTO]:
         """
         Delete user.
         Returns TO for removed user or None if user does not exist.
         """
         try:
-            user_to = self._user_repository.delete_user_by_username(username, licence_id)
+            if hard_delete:
+                user_to = self._user_repository.hard_delete_user_by_username(username, licence_id)
+            else:
+                user_to = self._user_repository.delete_user_by_username(username, licence_id)
         except UserDoesNotExist as err:
             return None
 

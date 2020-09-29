@@ -49,6 +49,8 @@ class UserListResource(BaseResource):
         user_to = self.map_with_error(data)
         # TODO - catch exceptions
         user_to = self._user_crud_service.create_user(user_to)
+        if user_to is None:
+            raise falcon.HTTPBadRequest()
 
         resp.status = falcon.HTTP_CREATED
         resp.media = user_to.as_json()

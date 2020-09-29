@@ -14,7 +14,7 @@ class BaseTestEndpoint:
     @staticmethod
     def setup_class(cls):
         # Clear database
-        cls.client = get_client_with_unique_db()  # get_falcon_client()
+        cls.client = get_client_with_unique_db()
         cls.services = ServicesContainer(
             db_manager=cls.get_db_manager(),
             user_crud_service=cls.client.app.user_crud_service,

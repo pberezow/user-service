@@ -19,6 +19,9 @@ class UserRepository:
     DELETE_USER_BY_USERNAME_QUERY = """
         UPDATE users SET is_active = FALSE WHERE username = %s AND licence_id = %s RETURNING *;
     """
+    HARD_DELETE_USER_BY_USERNAME_QUERY = """
+        DELETE FROM users WHERE username = %s AND licence_id = %s RETURNING *;
+    """
     RESTORE_USER_BY_USERNAME_QUERY = """
         UPDATE users SET is_active = TRUE WHERE username = %s AND licence_id = %s RETURNING *;
     """
@@ -134,6 +137,24 @@ class UserRepository:
         with self._db.session() as cur:
             try:
                 cur.execute(self.DELETE_USER_BY_USERNAME_QUERY, (username, licence_id))
+                res = cur.fetchone()
+                self._db.commit()
+            except psycopg2.Error as err:
+                self._db.rollback()
+                raise get_db_exception(err) from err
+        if not res:
+            raise UserDoesNotExist()
+
+        user_to = self.map_record_to_user_to(*res)
+        return user_to
+
+    def hard_delete_user_by_username(self, username: str, licence_id: int) -> UserTO:
+        """
+        Hard delete user.
+        """
+        with self._db.session() as cur:
+            try:
+                cur.execute(self.HARD_DELETE_USER_BY_USERNAME_QUERY, (username, licence_id))
                 res = cur.fetchone()
                 self._db.commit()
             except psycopg2.Error as err:
