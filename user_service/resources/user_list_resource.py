@@ -18,6 +18,8 @@ class UserListResource(BaseResource):
     mapper = UserMapper(included_attributes={'licence_id', 'username', 'password', 'is_admin', 'first_name',
                                              'last_name', 'email', 'phone_number', 'address', 'position', 'is_active',
                                              'date_joined', 'last_login'})
+    response_attributes = ['id', 'username', 'email', 'is_admin', 'first_name', 'last_name', 'phone_number', 'position',
+                           'is_active']
 
     def __init__(self, user_crud_service: UserCRUDService):
         self._user_crud_service = user_crud_service
@@ -27,8 +29,13 @@ class UserListResource(BaseResource):
         user = req.context.user
 
         users_to = self._user_crud_service.get_users_for_licence(user.licence_id)
-        resp.status = falcon.HTTP_200
-        resp.media = [u.as_json() for u in users_to]
+        resp.status = falcon.HTTP_OK
+        if user.is_admin:
+            users = [u.as_json() for u in users_to]
+        else:
+            users = [u.as_json() for u in users_to if u.is_active]
+        filtered_users = [{key: u[key] for key in self.response_attributes} for u in users]
+        resp.media = filtered_users
 
     @falcon.before(IsAdminPermissionHook())
     def on_post(self, req: Request, resp: Response):
@@ -53,4 +60,6 @@ class UserListResource(BaseResource):
             raise falcon.HTTPBadRequest()
 
         resp.status = falcon.HTTP_CREATED
-        resp.media = user_to.as_json()
+        user = user_to.as_json()
+        filtered_user = {key: user[key] for key in self.response_attributes}
+        resp.media = filtered_user
