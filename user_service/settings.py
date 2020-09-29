@@ -1,4 +1,4 @@
-# import os
+import os
 # import multiprocessing
 from datetime import timedelta
 
@@ -6,19 +6,34 @@ from datetime import timedelta
 settings_dict = {
     # JWT config
     'jwt': {
-        'private_key': 'secret_UHYYGJHG876876&^*uydshiye897hyu',
-        'public_key': None,
-        'algorithm': 'HS256',
+        'private_key': os.environ.get('RSA_PRIVATE_KEY', None),
+        'public_key': os.environ.get('RSA_PUBLIC_KEY', None),
+        'algorithm': 'RS256',
         'issuer': '1l0t1wIWqZ046DJ88DAqXTdY8lM0baV2AT6kzUw324rBeKh5x5npW8MMvooP',
         'token_lifetime': timedelta(minutes=60),
-        'refresh_secret': '-HGAGkev2SlEqrHA77iRD6FCo-R30YInMg6RXURT0O8=',
+        'refresh_secret': os.environ.get('REFRESH_TOKEN_KEY', '-HGAGkev2SlEqrHA77iRD6FCo-R30YInMg6RXURT0O8='),
         'refresh_token_lifetime': timedelta(days=1)
     },
+    # APP admins
     'admins': [
         {
-            'username': 'pitusx357',
+            'username': 'pberezowski',
             'password': 'admin123',
-            'email': 'pitusx357@gmail.com',
+            'email': 'piotr.berezowski97@gmail.com',
+            'licence_id': 0,
+            'is_admin': True
+        },
+        {
+            'username': 'wzaniewski',
+            'password': 'admin123',
+            'email': 'zaniewski.wojciech97@gmail.com',
+            'licence_id': 0,
+            'is_admin': True
+        },
+        {
+            'username': 'swrobel',
+            'password': 'admin123',
+            'email': 'szywro5@gmail.com',
             'licence_id': 0,
             'is_admin': True
         }
@@ -28,11 +43,17 @@ settings_dict = {
     # DB config
     'db': {
         'engine': 'postgres',
-        'username': 'postgres',
-        'password': 'postgres',
-        'host': 'localhost',
-        'port': 5432,
-        'dbname': 'user_db'
+        'username': os.environ.get('POSTGRES_USER', 'postgres'),
+        'password': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
+        'host': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'port': int(os.environ.get('POSTGRES_PORT', '5432')),
+        'dbname': os.environ.get('POSTGRES_DB_NAME', 'user_db'),
+    },
+    # Eureka config
+    'eureka': {
+        'host': 'http://eureka:8081/eureka/',
+        'docker_port': int(os.environ.get('DOCKER_PORT', '8000')),
+        'container_id': os.environ.get('CONTAINER_ID', 'localhost')
     },
     # Gunicorn config
     'gunicorn': {

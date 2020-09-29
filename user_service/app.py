@@ -2,7 +2,8 @@ import falcon
 from datetime import datetime
 from user_service.db import DBManager
 from user_service.repository import UserRepository, GroupRepository, ResetTokenRepository
-from user_service.services import UserCRUDService, AuthService, JWTService, GroupCRUDService, ResetTokenService
+from user_service.services import (UserCRUDService, AuthService, JWTService, GroupCRUDService, ResetTokenService,
+                                   EurekaService)
 from user_service.resources import (UserDetailsResource, UserListResource, LoginResource, LogoutResource,
                                     RefreshTokenResource, SetPasswordResource, GroupDetailsResource,
                                     GroupListResource, UserGroupsResource, ValidateResetTokenResource,
@@ -13,7 +14,7 @@ from user_service.exceptions.database import DatabaseException
 
 
 class UserApplication(falcon.API):
-    def __init__(self, config, router=None, independent_middleware=True, debug=False, init_db=False):
+    def __init__(self, config, router=None, independent_middleware=True, debug=False, init_db=False, use_eureka=True):
         self.config = config
         self._debug = debug
 
@@ -26,6 +27,8 @@ class UserApplication(falcon.API):
 
         if init_db and debug:
             self._create_admins()
+        if use_eureka:
+            self.eureka_service.register()
 
     def _setup_db(self, init_db=False):
         self._db_manager = DBManager(db_config=self.config['db'], init_db=init_db,
@@ -63,6 +66,7 @@ class UserApplication(falcon.API):
             self.user_crud_service,
             self.config['reset_password_token_lifetime']
         )
+        self.eureka_service = EurekaService(self.config['eureka'])
 
     def _setup_routes(self):
         self.add_route('/login', LoginResource(self.auth_service, self.jwt_service))
