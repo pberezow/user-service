@@ -17,13 +17,13 @@ class UserRepository:
         address, position, last_login, date_joined, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
     """
     DELETE_USER_BY_USERNAME_QUERY = """
-        UPDATE users SET is_active = FALSE WHERE username = %s AND licence_id = %s RETURNING *;
+        UPDATE users SET is_active = FALSE WHERE username = %s AND licence_id = %s AND is_active = TRUE RETURNING *;
     """
     HARD_DELETE_USER_BY_USERNAME_QUERY = """
         DELETE FROM users WHERE username = %s AND licence_id = %s RETURNING *;
     """
     RESTORE_USER_BY_USERNAME_QUERY = """
-        UPDATE users SET is_active = TRUE WHERE username = %s AND licence_id = %s RETURNING *;
+        UPDATE users SET is_active = TRUE WHERE username = %s AND licence_id = %s AND is_active = FALSE RETURNING *;
     """
     GET_USER_BY_USERNAME_QUERY = """
         SELECT * FROM users WHERE username = %s AND licence_id = %s;
@@ -32,21 +32,21 @@ class UserRepository:
             SELECT * FROM users WHERE email = %s;
     """
     GET_USER_FOR_AUTHENTICATION_QUERY = """
-        SELECT * FROM users WHERE username = %s;
+        SELECT * FROM users WHERE username = %s AND is_active = TRUE;
     """
     GET_USERS_BY_LICENCE_ID_QUERY = """
         SELECT * FROM users WHERE licence_id = %s;
     """
     UPDATE_USER_BY_USERNAME_QUERY = """
-        UPDATE users SET {} WHERE username = %s AND licence_id = %s RETURNING *;
+        UPDATE users SET {} WHERE username = %s AND licence_id = %s AND is_active = TRUE RETURNING *;
     """
     GET_USERS_FOR_GROUP_ID_QUERY = """
         SELECT users.* FROM users 
             JOIN users_groups ON users.id = users_groups.user_id 
-            WHERE users_groups.group_id = %s;
+            WHERE users_groups.group_id = %s AND users.is_active = TRUE;
     """
     SET_PASSWORD_QUERY = """
-        UPDATE users set password = %s WHERE username = %s RETURNING *;
+        UPDATE users set password = %s WHERE username = %s AND is_active = TRUE RETURNING *;
     """
     REMOVE_ALL_USER_GROUPS_QUERY = """
         DELETE FROM users_groups 

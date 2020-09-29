@@ -24,7 +24,7 @@ class UserApplication(falcon.API):
         super().__init__(middleware=middleware, router=router, independent_middleware=independent_middleware)
         self._setup_routes()
 
-        if init_db:
+        if init_db and debug:
             self._create_admins()
 
     def _setup_db(self, init_db=False):
