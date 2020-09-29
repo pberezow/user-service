@@ -8,7 +8,7 @@ from user_service.resources import (UserDetailsResource, UserListResource, Login
                                     RefreshTokenResource, SetPasswordResource, GroupDetailsResource,
                                     GroupListResource, UserGroupsResource, ValidateResetTokenResource,
                                     ResetPasswordResource, CreateResetTokenResource)
-from user_service.middlewares import AuthMiddleware, RequestTimeMiddleware
+from user_service.middlewares import AuthMiddleware, RequestTimeMiddleware, CrossOriginMiddleware
 from user_service.models.user import UserTO
 from user_service.exceptions.database import DatabaseException
 
@@ -88,7 +88,8 @@ class UserApplication(falcon.API):
     def _setup_middleware(self):
         middleware = [
             AuthMiddleware(self.jwt_service,
-                           {'/login', '/refresh', '/reset', '/reset/token', '/reset/token/validate'})
+                           {'/login', '/refresh', '/reset', '/reset/token', '/reset/token/validate'}),
+            CrossOriginMiddleware()
         ]
 
         if self._debug:
