@@ -31,8 +31,7 @@ class TestRefreshToken(BaseTestEndpoint):
         tokens = self._login()
         res = self.client.simulate_post(
             REFRESH_TOKEN_PATH,
-            json={'refresh_token': tokens['refresh_token']},
-            headers={'Authorization': f'Bearer {tokens["token"]}'}
+            json={'refresh_token': tokens['refresh_token']}
         )
         assert res.status == falcon.HTTP_OK
         assert res.cookies.get('token', None) is not None
@@ -42,8 +41,7 @@ class TestRefreshToken(BaseTestEndpoint):
         tokens = self._login()
         res = self.client.simulate_post(
             REFRESH_TOKEN_PATH,
-            json={'refresh_token': tokens['token']},
-            headers={'Authorization': f'Bearer {tokens["token"]}'}
+            json={'refresh_token': tokens['token']}
         )
         assert res.status == falcon.HTTP_BAD_REQUEST
         assert res.cookies.get('token', None) is None
@@ -53,8 +51,7 @@ class TestRefreshToken(BaseTestEndpoint):
         tokens = self._login()
         res = self.client.simulate_post(
             REFRESH_TOKEN_PATH,
-            json={},
-            headers={'Authorization': f'Bearer {tokens["token"]}'}
+            json={}
         )
         assert res.status == falcon.HTTP_BAD_REQUEST
         assert res.cookies.get('token', None) is None
@@ -62,12 +59,12 @@ class TestRefreshToken(BaseTestEndpoint):
 
     def test_refresh_malformed_token(self):
         tokens = self._login()
-        malformed_token = tokens['refresh_token'] + 'asd'
+        malformed_token = 'asd' + tokens['refresh_token']
         res = self.client.simulate_post(
             REFRESH_TOKEN_PATH,
-            json={'refresh_token': malformed_token},
-            headers={'Authorization': f'Bearer {tokens["token"]}'}
+            json={'refresh_token': malformed_token}
         )
+        print(res.cookies)
         assert res.status == falcon.HTTP_BAD_REQUEST
         assert res.cookies.get('token', None) is None
         assert res.cookies.get('refresh_token', None) is None
