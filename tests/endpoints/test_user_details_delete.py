@@ -6,7 +6,7 @@ from tests.endpoints.utils.utils import (create_admin_user, create_non_admin_use
                                          create_user_with_different_licence)
 
 
-class TestDetailsListDelete(BaseTestEndpoint):
+class TestUserDetailsDelete(BaseTestEndpoint):
 
     @staticmethod
     def setup_class(cls):
