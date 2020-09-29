@@ -1,7 +1,7 @@
 import falcon
 
 from tests.endpoints.utils.base_test_endpoint import BaseTestEndpoint
-from tests.endpoints.utils.paths import USERS_DETAILS_PATH
+from tests.endpoints.utils.paths import USERS_LIST_PATH
 from tests.endpoints.utils.utils import create_admin_user, create_non_admin_user, ADMIN_PASSWORD, NON_ADMIN_PASSWORD
 
 
@@ -44,7 +44,7 @@ class TestUserListCreate(BaseTestEndpoint):
         )
 
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json=self.users_data['admin_payload'],
             headers=auth_headers
         )
@@ -62,7 +62,7 @@ class TestUserListCreate(BaseTestEndpoint):
             assert getattr(user_to, k) == v
 
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json=self.users_data['user_payload'],
             headers=auth_headers
         )
@@ -85,7 +85,7 @@ class TestUserListCreate(BaseTestEndpoint):
         )
 
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json=self.users_data['admin_payload'],
             headers=auth_headers
         )
@@ -93,7 +93,7 @@ class TestUserListCreate(BaseTestEndpoint):
         self.users.append({**self.users_data['admin_payload'], 'licence_id': self.admin_user.licence_id})
 
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json=self.users_data['admin_payload'],
             headers=auth_headers
         )
@@ -105,7 +105,7 @@ class TestUserListCreate(BaseTestEndpoint):
         )
 
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json={**self.users_data['admin_payload'], 'licence_id': self.admin_user.licence_id+10},
             headers=auth_headers
         )
@@ -130,7 +130,7 @@ class TestUserListCreate(BaseTestEndpoint):
         )
 
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json=wrong_payload,
             headers=auth_headers
         )
@@ -142,7 +142,7 @@ class TestUserListCreate(BaseTestEndpoint):
         )
 
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json={},
             headers=auth_headers
         )
@@ -154,7 +154,7 @@ class TestUserListCreate(BaseTestEndpoint):
         )
 
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json=self.users_data['user_payload'],
             headers=auth_headers
         )
@@ -162,7 +162,7 @@ class TestUserListCreate(BaseTestEndpoint):
 
     def test_create_user_by_unauthorized_fail(self):
         res = self.client.simulate_post(
-            USERS_DETAILS_PATH,
+            USERS_LIST_PATH,
             json=self.users_data['user_payload']
         )
         assert res.status == falcon.HTTP_UNAUTHORIZED
