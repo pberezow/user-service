@@ -34,7 +34,7 @@ class ResetTokenService:
         """
         try:
             user_to = self._reset_token_repository.get_user_for_token(token)
-        except UserDoesNotExist:
+        except TokenDoesNotExist:
             return False
         # set password using UserCRUDService class's method
         return self._user_crud_service.set_password(user_to.username, password)
@@ -95,7 +95,7 @@ class ResetTokenService:
             return None
         return user_to
 
-    def get_user_id(self, token) -> Optional[int]:
+    def get_user_id(self, token: str) -> Optional[int]:
         """
         Returns user's id for token.
         """
@@ -118,7 +118,7 @@ class ResetTokenService:
             # wrong token format
             return False
 
-        if datetime.fromtimestamp(time) < datetime.now():
+        if datetime.fromtimestamp(int(time)) < datetime.now():
             # expired
             return False
         return True

@@ -121,7 +121,7 @@ class UserRepository:
         """
         with self._db.session() as cur:
             cur.execute(self.GET_USER_BY_EMAIL_QUERY, (email,))
-        res = cur.fetchone()
+            res = cur.fetchone()
         if not res:
             raise UserDoesNotExist()
 
