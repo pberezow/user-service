@@ -152,7 +152,7 @@ paths:
               - password
               - email
       responses:
-        200:
+        201:
           description: OK
           schema:
             $ref: '#/definitions/UserDetails'
@@ -306,6 +306,32 @@ paths:
     put:
       tags:
         - user
+      summary: Set user's permissions
+      description: Set user's permissions
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: Username of user whose permissions will be changed
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: list of groups
+          required: true
+          schema:
+            type: object
+            properties:
+              groups:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
       responses:
         200:
           description: OK
@@ -349,36 +375,74 @@ paths:
     get:
       tags:
         - group
+      summary: List of groups
+      description: Returns list of groups for user's licence
+      produces:
+        - application/json
       responses:
         200:
           description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Group'
     post:
       tags:
         - group
+      summary: Creates group
+      description: Returns created group
+      consumes:
+        - application/json
+      produces:
+        - application/json
       responses:
         200:
           description: OK
+          schema:
+            $ref: '#/definitions/Group'
 
   '/permissions/{group_name}':
     get:
       tags:
         - group
+      summary: Group's details
+      description: Returns details for group with corresponding group_name.
+      produces:
+        - application/json
       responses:
         200:
           description: OK
+          schema:
+            $ref: '#/definitions/Group'
     put:
       tags:
         - group
+      summary: Edit group
+      description: Returns modified group object
+      consumes:
+        - application/json
+      produces:
+        - application/json
+#      parameters:
+#        - in: body
+#          name: body
       responses:
         200:
           description: OK
+          schema:
+            $ref: '#/definitions/Group'
     delete:
       tags:
         - group
+      summary: Remove group
+      description: Returns removed group object.
+      produces:
+        - application/json
       responses:
         200:
           description: OK
-
+          schema:
+            $ref: '#/definitions/Group'
 
 definitions:
 
