@@ -17,6 +17,8 @@ class UserDetailsResource(BaseResource):
     """
     mapper = UserMapper(included_attributes={'username', 'email', 'is_admin', 'first_name', 'last_name', 'phone_number',
                                              'address', 'position', })
+    response_attributes = ['id', 'licence_id', 'username', 'email', 'is_admin', 'first_name', 'last_name',
+                           'phone_number', 'address', 'position', 'last_login', 'date_joined', 'is_active', 'groups']
 
     def __init__(self, user_crud_service: UserCRUDService):
         self._user_crud_service = user_crud_service
@@ -30,13 +32,18 @@ class UserDetailsResource(BaseResource):
         if user_to is None:
             raise falcon.HTTPNotFound(description=f'User {username} does not exist. [licence id = {user.licence_id}]')
 
-        resp.status = falcon.HTTP_200
-        resp.media = user_to.as_json()
+        if not user.is_admin and not user_to.is_active:
+            raise falcon.HTTPNotFound(description=f'User {username} does not exist. [licence id = {user.licence_id}]')
+
+        resp.status = falcon.HTTP_OK
+        user = user_to.as_json()
+        filtered_user = {key: user[key] for key in self.response_attributes}
+        resp.media = filtered_user
 
     @falcon.before(OrPermissionsHook([IsSelfPermissionHook(param_name='username'), IsAdminPermissionHook()]))
     def on_put(self, req: Request, resp: Response, username: str):
         """Edit user data."""
-        resp.status = falcon.HTTP_200
+        resp.status = falcon.HTTP_OK
         resp.media = {'msg': 'Not implemented yet.'}
 
     @falcon.before(IsAdminPermissionHook())
@@ -49,4 +56,3 @@ class UserDetailsResource(BaseResource):
             raise falcon.HTTPNotFound(description=f'User {username} does not exist. [licence id = {user.licence_id}]')
 
         resp.status = falcon.HTTP_200
-        resp.media = user_to.as_json()

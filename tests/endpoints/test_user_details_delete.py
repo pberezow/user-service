@@ -64,7 +64,6 @@ class TestDetailsListDelete(BaseTestEndpoint):
         removed_user = self.services.user_crud_service.get_user(other_user.licence_id, other_user.username)
         assert removed_user is not None
         assert removed_user.is_active is True
-        assert res.json is None
 
     def test_delete_user_by_non_admin_fail(self):
         non_admin = create_non_admin_user(self.services)
