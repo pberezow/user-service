@@ -1,17 +1,18 @@
 import os
-# import multiprocessing
+import multiprocessing
+
 from datetime import timedelta
 
 
 settings_dict = {
     # JWT config
     'jwt': {
-        'private_key': os.environ.get('RSA_PRIVATE_KEY', None),
-        'public_key': os.environ.get('RSA_PUBLIC_KEY', None),
+        'private_key': os.environ.get('JWT_PRIVATE_KEY', None),
+        'public_key': os.environ.get('JWT_PUBLIC_KEY', None),
         'algorithm': 'RS256',
         'issuer': '1l0t1wIWqZ046DJ88DAqXTdY8lM0baV2AT6kzUw324rBeKh5x5npW8MMvooP',
         'token_lifetime': timedelta(minutes=60),
-        'refresh_secret': os.environ.get('REFRESH_TOKEN_KEY', '-HGAGkev2SlEqrHA77iRD6FCo-R30YInMg6RXURT0O8='),
+        'refresh_secret': os.environ.get('REFRESH_TOKEN_KEY', None),
         'refresh_token_lifetime': timedelta(days=1)
     },
     # APP admins
@@ -57,13 +58,15 @@ settings_dict = {
     },
     # Gunicorn config
     'gunicorn': {
-        'reload': True,
+        'reload': False,
         'loglevel': 'debug',
         'errorlog': 'gunicorn.error.log',
         'accesslog': 'gunicorn.log',
         'capture_output': True,
+        'workers': multiprocessing.cpu_count() * 2 + 1,
+        'proc_name': 'user_service',
         'bind': [
-            'localhost:8080'
+            '0.0.0.0:8000'
         ]
     }
 }

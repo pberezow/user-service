@@ -35,6 +35,7 @@ class EurekaService:
                 eureka_up = True
                 print('Connected to eureka.')
             except Exception as err:
+                tries += 1
                 if tries > self.max_connection_tries:
                     raise self.EurekaConnectionError() from err
                 print(f'Connecting to eureka...  ({tries})')

@@ -7,13 +7,7 @@ done
 
 echo "PostgreSQL started"
 
+# Get id of container
+export CONTAINER_ID=$(cut -c9-20 < /proc/1/cpuset)
 
-python manage.py flush --no-input
-python manage.py migrate
-python manage.py initadmin
-
-set -m
-gunicorn user_service.wsgi &
-/opt/java/openjdk/bin/java -jar /sidecar/app.jar
-fg %1
-
+sh ./run.sh
