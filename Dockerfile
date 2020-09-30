@@ -2,7 +2,10 @@ FROM sili/python_base as py
 
 WORKDIR /app
 
-COPY . .
+COPY ./user_service ./user_service
+COPY ./entrypoint.sh ./entrypoint.sh
+COPY ./run_dev.sh ./run.sh
+COPY ./requirements.txt ./requirements.txt
 
 # for cffi and psycopg2 (build python packages)
 RUN \
@@ -12,13 +15,5 @@ RUN \
  python3 -m pip install -r requirements.txt --no-cache-dir && \
  apk --purge del .build-deps
 
-#FROM sili/jre_base:latest
-#WORKDIR /sidecar
-#ARG JAR_FILE=target/*.jar
-#COPY --from=py / /
-#COPY --from=py /app /app
 
-#COPY ${JAR_FILE} ./app.jar
-
-WORKDIR /app
 ENTRYPOINT ["./entrypoint.sh"]

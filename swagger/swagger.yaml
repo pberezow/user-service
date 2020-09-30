@@ -1,0 +1,542 @@
+swagger: '2.0'
+info:
+  description: >-
+    Sili user service.
+  version: 0.1.0
+  title: User Service
+host: meminder.swagger.io
+basePath: /users
+tags:
+  - name: user
+    description: Operations about users
+  - name: group
+    description: Operations about groups
+  - name: jwt
+    description: JWT and authorization-related operations
+schemes:
+  - https
+  - http
+paths:
+  '/login':
+    post:
+      tags:
+        - jwt
+      summary: Login user
+      description: Creates JWT and refresh token for user. Tokens are returned as cookies.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: User's credentials
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+            required:
+              - username
+              - password
+      responses:
+        200:
+          description: Login successful
+          schema:
+            $ref: '#/definitions/AuthObject'
+        400:
+          description: Bad request
+        401:
+          description: Login failed
+
+  '/token/refresh':
+    post:
+      tags:
+        - jwt
+      summary: Refresh session
+      description: Validates supplied refresh token and if valid creates new JWT and refresh token for it.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Refresh token
+          required: true
+          schema:
+            type: object
+            properties:
+              refresh_token:
+                type: string
+            required:
+              - refresh_token
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AuthObject'
+        400:
+          description: Bad request - refresh token invalid or expired
+        401:
+          description: Unauthorized - User is inactive or does not exist
+
+  '/':
+    get:
+      tags:
+      - user
+      summary: Get list of users
+      description: Returns list of users with assigned to same licence as authorized user.
+      security:
+        - JWT: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        403:
+          description: Forbidden - missinng JWT
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: Creates new user for licence same as authorized user. Available only for users with admin privileges.
+      security:
+        - JWT: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: User data
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              email:
+                type: string
+                format: email
+              is_admin:
+                type: boolean
+                default: false
+              first_name:
+                type: string
+                default: ''
+              last_name:
+                type: string
+                default: ''
+              phone_number:
+                type: string
+                default: ''
+              address:
+                type: string
+                default: ''
+              position:
+                type: string
+                default: ''
+            required:
+              - username
+              - password
+              - email
+      responses:
+        201:
+          description: OK
+          schema:
+            $ref: '#/definitions/UserDetails'
+        403:
+          description: Forbidden - missinng JWT or no admin rights
+
+  '/{username}':
+    get:
+      tags:
+        - user
+      summary: Get user's details
+      description: Returns detailed data about user with provided username.
+      security:
+        - JWT: []
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: path
+        description: Username of user to get
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/UserDetails'
+        404:
+          description: Not found
+        403:
+          description: Forbidden - missinng JWT
+    put:
+      tags:
+        - user
+      summary: Edit user
+      description: Edit user's data, and return modified user.
+      security:
+        - JWT: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: path
+        description: Username of modified user
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: User data, only provided fields will be edited.
+        required: true
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+            is_admin:
+              type: boolean
+            first_name:
+              type: string
+            last_name:
+              type: string
+            phone_number:
+              type: string
+            address:
+              type: string
+            position:
+              type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/UserDetails'
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        403:
+          description: Forbidden - missinng JWT or admin rights
+    delete:
+      tags:
+        - user
+      summary: Remove user
+      description: Removes user (sets as inactive) and returns user's object.
+      security:
+        - JWT: []
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: path
+        description: Username of user to delete
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/UserDetails'
+        404:
+          description: Not found
+        403:
+          description: Forbidden - missinng JWT or admin rights
+
+  '/{username}/password':
+    put:
+      tags:
+        - user
+      summary: Set password
+      description: Sets password for user with username matching `username` parameter.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - name: username
+        in: path
+        description: Username of user whose password will be changed
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: Old and new password
+        required: true
+        schema:
+          type: object
+          properties:
+            old_password:
+              type: string
+            password:
+              type: string
+      responses:
+        200:
+          description: OK
+        401:
+          description: Bad request
+        404:
+          description: Not found
+        403:
+          description: Forbidden - missinng JWT
+
+  '/{username}/permissions':
+    get:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+    put:
+      tags:
+        - user
+      summary: Set user's permissions
+      description: Set user's permissions
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: Username of user whose permissions will be changed
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: list of groups
+          required: true
+          schema:
+            type: object
+            properties:
+              groups:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+      responses:
+        200:
+          description: OK
+
+  '/{username}/avatar':
+    put:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+
+  '/reset':
+    post:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+#    reset password [consumes username and reset token]
+
+  '/reset/token':
+    post:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+  #    creates reset password token
+
+  '/reset/token/validate/':
+    post:
+      tags:
+        - user
+      responses:
+        200:
+          description: OK
+  #    validates reset password token ???
+
+  '/permissions':
+    get:
+      tags:
+        - group
+      summary: List of groups
+      description: Returns list of groups for user's licence
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Group'
+    post:
+      tags:
+        - group
+      summary: Creates group
+      description: Returns created group
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Group'
+
+  '/permissions/{group_name}':
+    get:
+      tags:
+        - group
+      summary: Group's details
+      description: Returns details for group with corresponding group_name.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Group'
+    put:
+      tags:
+        - group
+      summary: Edit group
+      description: Returns modified group object
+      consumes:
+        - application/json
+      produces:
+        - application/json
+#      parameters:
+#        - in: body
+#          name: body
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Group'
+    delete:
+      tags:
+        - group
+      summary: Remove group
+      description: Returns removed group object.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Group'
+
+definitions:
+
+  AuthObject:
+    type: object
+    properties:
+      token:
+        type: string
+        format: jwt
+      refresh_token:
+        type: string
+
+  User:
+    type: object
+    properties:
+      username:
+        type: string
+      email:
+        type: string
+        format: email
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+      position:
+        type: string
+
+  UserDetails:
+    type: object
+    properties:
+      id:
+        type: integer
+      licence_id:
+        type: integer
+      username:
+        type: string
+      email:
+        type: string
+        format: email
+      is_admin:
+        type: boolean
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+      address:
+        type: string
+      position:
+        type: string
+      last_login:
+        type: number
+        format: timestamp
+      date_joined:
+        type: number
+        format: timestamp
+      is_active:
+        type: boolean
+      groups:
+        type: array
+        items:
+          $ref: '#/definitions/Group'
+
+  Group:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+
+  GroupDetails:
+    type: object
+    properties:
+      id:
+        type: integer
+      licence_id:
+        type: integer
+      name:
+        type: string
+      users:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+
+securityDefinitions:
+  JWT:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: 'JWT authorization using Bearer scheme. Example:  "Authorization: Bearer {token}"'
+
+security:
+  - JWT: []
