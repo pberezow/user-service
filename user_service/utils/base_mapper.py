@@ -117,11 +117,26 @@ class BaseMapper(ABC):
             self._validate_attribute(attribute, value)
         return True
 
-    def _validate_subset(self, input_dict: Dict[str, Any], subset_of_attributes: Set[str]):
+    def validate_subset(self, users_input: Union[List, Dict[str, Any]], subset_of_attributes: Set[str]):
+        """
+        Validate subset of attributes against all validators (all from self._attributes_to_validate).
+        returns True or raises InvalidAttributeValueException if validation fails. MissingUserInput if no matching
+            key in users_input.
+        """
         # validate only subset of attributes
         if not subset_of_attributes.issubset(self._included_attributes):
             raise MissingValidators(self._included_attributes.difference(subset_of_attributes), None, type(self))
 
+        if self._many and isinstance(users_input, list):
+            for obj in users_input:
+                self._validate_subset(obj, subset_of_attributes)
+        elif not self._many and isinstance(users_input, dict):
+            self._validate_subset(users_input, subset_of_attributes)
+        else:
+            raise InvalidAttributeValueException('users_input', users_input, type(self))
+        return True
+
+    def _validate_subset(self, input_dict: Dict[str, Any], subset_of_attributes: Set[str]):
         for attribute in subset_of_attributes:
             try:
                 value = input_dict[attribute]
@@ -174,6 +189,9 @@ class BaseMapper(ABC):
             e.g. nested_subsets_of_attributes = {
                                                     'groups': ({'id', 'name'}, None)
         """
+        if not subset_of_attributes.issubset(self._included_attributes):
+            raise MissingValidators(self._included_attributes.difference(subset_of_attributes), None, type(self))
+
         if self._many and isinstance(users_input, list):
             if not skip_validation:
                 # list because of map's lazy initialization

@@ -43,8 +43,20 @@ class UserDetailsResource(BaseResource):
     @falcon.before(OrPermissionsHook([IsSelfPermissionHook(param_name='username'), IsAdminPermissionHook()]))
     def on_put(self, req: Request, resp: Response, username: str):
         """Edit user data."""
+        user = req.context.user
+
+        data = req.media
+        # validate data
+        self.validate_with_error(data, partial=True, subset_of_attributes=set(data.keys()))
+
+        user_to = self._user_crud_service.set_user_data(username, data)
+        if not user_to:
+            # does not exist or db constraints violated TODO
+            raise falcon.HTTPNotFound(description=f'User {username} does not exist. [licence id = {user.licence_id}]')
+
         resp.status = falcon.HTTP_OK
-        resp.media = {'msg': 'Not implemented yet.'}
+        user = user_to.as_json()
+        resp.media = {key: user[key] for key in self.response_attributes}
 
     @falcon.before(IsAdminPermissionHook())
     def on_delete(self, req: Request, resp: Response, username: str):

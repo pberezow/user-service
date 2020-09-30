@@ -1,6 +1,6 @@
 import falcon
 from abc import ABC, abstractmethod
-from typing import Optional, Union, List, Dict, Any
+from typing import Optional, Union, List, Dict, Set, Any
 
 from user_service.utils import BaseMapper
 from user_service.exceptions.validation import InvalidAttributeValueException, MissingUserInput
@@ -36,3 +36,17 @@ class BaseResource(ABC):
             raise falcon.HTTPBadRequest(description=f'Missing `{err.attribute}` param in request body.')
 
         return transport_obj
+
+    def validate_with_error(self, user_input: Union[List, Dict[str, Any]],
+                            partial: bool = False, subset_of_attributes: Optional[Set[str]] = None) -> bool:
+        try:
+            if partial:
+                self.mapper.validate_subset(user_input, subset_of_attributes)
+            else:
+                self.mapper.validate(user_input)
+        except InvalidAttributeValueException as err:
+            raise falcon.HTTPBadRequest(description=f'Invalid `{err.attribute}` value.')
+        except MissingUserInput as err:
+            raise falcon.HTTPBadRequest(description=f'Missing `{err.attribute}` param in request body.')
+
+        return True

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Dict, Optional, Any
 
 from user_service.models import UserTO
 from user_service.repository import UserRepository, GroupRepository
@@ -52,8 +52,17 @@ class UserCRUDService:
 
         return user_to
 
-    def set_user_data(self):
-        pass
+    def set_user_data(self, licence_id: int, username: str, attrs_to_set: Dict[str, Any]) -> Optional[UserTO]:
+        """
+        Update user.
+        Returns TO for updated user or None if user does not exist.
+        """
+        try:
+            user_to = self._user_repository.update_user_by_username(username, licence_id, **attrs_to_set)
+        except DatabaseException as err:
+            return None
+
+        return user_to
 
     def remove_user(self, licence_id: int, username: str, hard_delete: Optional[bool] = False) -> Optional[UserTO]:
         """
