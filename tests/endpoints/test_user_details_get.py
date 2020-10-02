@@ -27,7 +27,6 @@ class TestUserDetailsGet(BaseTestEndpoint):
             USERS_DETAILS_PATH % self.user_to_get.username,
             headers=auth_headers
         )
-        print(res)
         assert res.status == falcon.HTTP_OK
         user = self.services.user_crud_service.get_user(self.user_to_get.licence_id, self.user_to_get.username)
         assert user is not None
