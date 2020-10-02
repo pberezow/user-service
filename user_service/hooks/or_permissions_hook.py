@@ -17,5 +17,5 @@ class OrPermissionsHook:
             except falcon.HTTPForbidden as err:
                 errors.append(err)
 
-            if not permitted and errors:
-                raise errors[0]
+        if not permitted and errors:
+            raise errors[0]
