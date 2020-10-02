@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Union, List, Dict, Set, Any
 
 from user_service.utils import BaseMapper
-from user_service.exceptions.validation import InvalidAttributeValueException, MissingUserInput
+from user_service.exceptions.validation import InvalidAttributeValueException, MissingUserInput, MissingValidators
 
 
 class BaseResource(ABC):
@@ -48,5 +48,6 @@ class BaseResource(ABC):
             raise falcon.HTTPBadRequest(description=f'Invalid `{err.attribute}` value.')
         except MissingUserInput as err:
             raise falcon.HTTPBadRequest(description=f'Missing `{err.attribute}` param in request body.')
-
+        except MissingValidators as err:
+            raise falcon.HTTPBadRequest(description='Unexpected attribute param in request body.')
         return True
