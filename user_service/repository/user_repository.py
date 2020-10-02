@@ -185,17 +185,17 @@ class UserRepository:
         user_to = self.map_record_to_user_to(*res)
         return user_to
 
-    def update_user_by_username(self, username: str, licence_id: int, **kwargs) -> UserTO:
+    def update_user_by_username(self, _username: str, _licence_id: int, **kwargs) -> UserTO:
         """
         Update user's data (kwargs contains pairs (column, new_value)).
         Return transport object for updated user or raise DatabaseException.
         """
         # Get updated columns with new values from kwargs and prepare query
-        values_to_update = ','.join([f'{key}={value}' for key, value in kwargs.items()])
+        values_to_update = ', '.join([f'{key} = %s' for key in kwargs.keys()])
         query = self.UPDATE_USER_BY_USERNAME_QUERY.format(values_to_update)
         with self._db.session() as cur:
             try:
-                cur.execute(query, (username, licence_id))
+                cur.execute(query, (*kwargs.values(), _username, _licence_id))
                 self._db.commit()
             except psycopg2.Error as err:
                 self._db.rollback()

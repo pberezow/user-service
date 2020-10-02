@@ -24,6 +24,10 @@ class UserDetailsResource(BaseResource):
         self._user_crud_service = user_crud_service
         super().__init__()
 
+    def _remove_restricted_keys(self, data: dict) -> None:
+        for key in ['username', 'position', 'is_admin']:
+            dict.pop(ken, None)
+
     def on_get(self, req: Request, resp: Response, username: str):
         """Get user by username."""
         user = req.context.user
@@ -46,10 +50,13 @@ class UserDetailsResource(BaseResource):
         user = req.context.user
 
         data = req.media
+        # remove attributes settable only by admin
+        if not user.is_admin:
+            self._remove_restricted_keys(data)
         # validate data
         self.validate_with_error(data, partial=True, subset_of_attributes=set(data.keys()))
 
-        user_to = self._user_crud_service.set_user_data(username, data)
+        user_to = self._user_crud_service.set_user_data(user.licence_id, username, data)
         if not user_to:
             # does not exist or db constraints violated TODO
             raise falcon.HTTPNotFound(description=f'User {username} does not exist. [licence id = {user.licence_id}]')
